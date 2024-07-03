@@ -1,0 +1,110 @@
+// This is your updated Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id       String    @id @default(uuid())
+  email    String
+  name     String
+  password String
+  sessions Session[]
+  role     Role?     @default(STUDENT) // Default role is STUDENT
+  admin    Admin[]
+  student  Student[]
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  expiresAt DateTime
+  role      Role?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Admin {
+  adminid               Int                    @id @default(autoincrement())
+  userId                String
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accommodationRequests AccommodationRequest[]
+}
+
+model Student {
+  id             Int                    @id @default(autoincrement())
+  userId         String
+  user           User                   @relation(fields: [userId], references: [id])
+  gender         Gender
+  requests       AccommodationRequest[]
+  bedAllocations BedAllocation[]
+}
+
+model Hostel {
+  id      Int    @id @default(autoincrement())
+  name    String
+  address String
+  gender  Gender
+  rooms   Room[]
+}
+
+model Room {
+  id       Int    @id @default(autoincrement())
+  name     String @unique
+  hostelId Int
+  hostel   Hostel @relation(fields: [hostelId], references: [id])
+  beds     Bed[]
+}
+
+model Bed {
+  id         Int            @id @default(autoincrement())
+  bedNumber  Int
+  isOccupied Boolean        @default(false)
+  roomId     Int
+  room       Room           @relation(fields: [roomId], references: [id])
+  allocation BedAllocation?
+}
+
+model AccommodationRequest {
+  id        Int           @id @default(autoincrement())
+  status    RequestStatus @default(PENDING)
+  studentId Int
+  student   Student       @relation(fields: [studentId], references: [id])
+  adminId   Int?
+  admin     Admin?        @relation(fields: [adminId], references: [adminid])
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model BedAllocation {
+  id        Int       @id @default(autoincrement())
+  startDate DateTime
+  endDate   DateTime?
+  studentId Int
+  student   Student   @relation(fields: [studentId], references: [id])
+  bedId     Int       @unique
+  bed       Bed       @relation(fields: [bedId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum Role {
+  ADMIN
+  STUDENT
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
