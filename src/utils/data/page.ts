@@ -8,10 +8,10 @@ export async function create_hostel() {
 
 export async function get_total_count() {
   const data = await prisma.$transaction([
-    prisma.hostel.count(),
+    prisma.property.count(),
     prisma.room.count(),
-    prisma.bed.count(),
-    prisma.bed.count({ where: { isOccupied: false } }),
+    prisma.booking.count(),
+    prisma.room.count({ where: { status: "AVAILABLE" } }),
   ]);
   return data;
 }

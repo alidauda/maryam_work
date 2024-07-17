@@ -26,8 +26,6 @@ export default async function DashboardLayout({
     return redirect("/login");
   }
 
-
-  
   return (
     <div className="flex min-h-screen w-full flex-col">
       <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
@@ -49,13 +47,19 @@ export default async function DashboardLayout({
             href="/dashboard/hostel"
             className="text-muted-foreground transition-colors hover:text-foreground"
           >
-            Hostel
+            Property
           </Link>
           <Link
             href="/dashboard/room"
             className="text-muted-foreground transition-colors hover:text-foreground"
           >
             room
+          </Link>
+          <Link
+            href="/dashboard/bookings"
+            className="text-muted-foreground transition-colors hover:text-foreground"
+          >
+            bookings
           </Link>
         </nav>
         <Sheet>

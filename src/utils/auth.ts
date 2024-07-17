@@ -34,7 +34,7 @@ declare module "lucia" {
 
 interface DatabaseUserAttributes {
   username: string;
-  role: "ADMIN" | "STUDENT";
+  role: "ADMIN" | "GUEST";
 }
 
 export const validateRequest = cache(

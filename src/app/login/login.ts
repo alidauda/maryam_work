@@ -1,6 +1,6 @@
 "use server";
 import prisma from "@/utils/db";
-import { Role } from "@prisma/client";
+import { UserRole } from "@prisma/client";
 import { hash } from "@node-rs/argon2";
 import { cookies } from "next/headers";
 import { lucia } from "@/utils/auth";
@@ -58,22 +58,19 @@ export async function signup(formData: FormData) {
         email,
         password: passwordHash,
         name,
-        role: Role.ADMIN,
-        admin: {
-          create: {},
-        },
+        role: UserRole.ADMIN,
       },
     });
     console.log("user created");
 
     const session = await lucia.createSession(userId, {
-      role: Role.ADMIN,
+      role: UserRole.ADMIN,
     });
     const sessionCookie = lucia.createSessionCookie(session.id);
     cookies().set(
       sessionCookie.name,
       sessionCookie.value,
-      sessionCookie.attributes,
+      sessionCookie.attributes
     );
   } catch (e) {
     console.log(e);
