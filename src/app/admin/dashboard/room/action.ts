@@ -26,8 +26,6 @@ export async function createRoom(data: z.infer<typeof room_schema>) {
 
     const newProperty = await prisma.room.create({
       data: {
-        name: data.name,
-        description: data.description,
         price: parseInt(data.price),
         capacity: parseInt(data.capacity),
         availableRoom: parseInt(data.availableroom),

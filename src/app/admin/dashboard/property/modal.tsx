@@ -85,6 +85,7 @@ export default function Modal() {
             </Label>
             <Input className="col-span-3 w-full" {...register("address")} />
             <UploadDropzone
+              className="text-black bg-red-400"
               endpoint="imageUploader"
               onClientUploadComplete={(res) => {
                 // Do something with the response

@@ -21,8 +21,7 @@ interface DataTableProps {
   };
 
   id: number;
-  name: string;
-  description: string;
+
   capacity: number;
   availableRoom: number;
   price: number;
@@ -36,7 +35,6 @@ export default function DataTabel({ props }: { props: DataTableProps }) {
   const value = dateConvert(props.createdAt.toISOString());
   return (
     <TableRow key={props.id}>
-      <TableCell className="font-medium">{props.name}</TableCell>
       <TableCell>
         <Badge
           variant="outline"
@@ -50,9 +48,7 @@ export default function DataTabel({ props }: { props: DataTableProps }) {
           {props.status}
         </Badge>
       </TableCell>
-      <TableCell className="hidden md:table-cell">
-        {props.property.name}
-      </TableCell>
+      <TableCell className="hidden md:table-cell"></TableCell>
       <TableCell className="hidden md:table-cell">
         {props.availableRoom}
       </TableCell>

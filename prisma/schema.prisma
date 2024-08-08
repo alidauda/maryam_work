@@ -46,8 +46,7 @@ model Property {
 
 model Room {
   id          Int       @id @default(autoincrement())
-  name        String
-  description String
+
   capacity    Int
   availableRoom Int
   price       Float

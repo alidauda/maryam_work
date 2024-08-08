@@ -21,8 +21,7 @@ import { $Enums } from "@prisma/client";
 
 interface Room {
   id: number;
-  name: string;
-  description: string;
+
   capacity: number;
   availableRoom: number;
   price: number;
@@ -214,7 +213,7 @@ export function Preferences({ property }: { property: Property[] }) {
                           {property.map((item) =>
                             item.rooms.map((room) => (
                               <SelectItem value={room.id!.toString()}>
-                                {room.name}{" "}
+                                {"room of" + room.capacity}
                               </SelectItem>
                             ))
                           )}

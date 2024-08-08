@@ -38,9 +38,6 @@ interface PropertyData {
   }[];
 }
 export const room_schema = z.object({
-  name: z.string().min(1, { message: "Required" }),
-  description: z.string().min(3),
-
   property: z.string(),
   price: z.string(),
   capacity: z.string(),
@@ -104,18 +101,22 @@ export default function RoomModal({ props }: { props: PropertyData }) {
         </DialogHeader>
         <div className=" py-4">
           <form onSubmit={handleSubmit(submit)} className="w-auto space-y-5 ">
-            <Label htmlFor="name" className="text-right">
-              Name
+            <Label htmlFor="property" className="text-right">
+              Apartment
             </Label>
-            <Input className="w-full" {...register("name")} />
-            <Label htmlFor="description" className="text-right">
-              description
-            </Label>
-            <Input className=" w-full" {...register("description")} />
-            <Label htmlFor="address" className="text-right">
-              Address
-            </Label>
-            <Input className="col-span-3 w-full" {...register("address")} />
+
+            <Select onValueChange={(value) => setValue("property", value)}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select apartment" />
+              </SelectTrigger>
+              <SelectContent>
+                {props.property.map((item) => (
+                  <SelectItem key={item.id} value={item.id.toString()}>
+                    {item.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
             <Label htmlFor="price" className="text-right">
               Price
@@ -132,22 +133,6 @@ export default function RoomModal({ props }: { props: PropertyData }) {
               className="col-span-3 w-full"
               {...register("availableroom")}
             />
-            <Label htmlFor="property" className="text-right">
-              Property
-            </Label>
-
-            <Select onValueChange={(value) => setValue("property", value)}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a property" />
-              </SelectTrigger>
-              <SelectContent>
-                {props.property.map((item) => (
-                  <SelectItem key={item.id} value={item.id.toString()}>
-                    {item.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
 
             <Button type="submit" disabled={isPending}>
               {isPending ? "...saving" : "submit"}
