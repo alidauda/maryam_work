@@ -40,7 +40,7 @@ interface PropertyData {
 export const room_schema = z.object({
   name: z.string().min(1, { message: "Required" }),
   description: z.string().min(3),
-  imageUrl: z.string(),
+
   property: z.string(),
   price: z.string(),
   capacity: z.string(),
@@ -60,7 +60,7 @@ export default function RoomModal({ props }: { props: PropertyData }) {
       name: "",
       description: "",
       address: "",
-      imageUrl: "",
+
       price: "",
       capacity: "",
       availableroom: "",
@@ -149,27 +149,7 @@ export default function RoomModal({ props }: { props: PropertyData }) {
               </SelectContent>
             </Select>
 
-            <UploadDropzone
-              endpoint="multiImageUploader"
-              onClientUploadComplete={(res) => {
-                const images = res.map((url) => url.url);
-                // Do something with the response
-
-                setValue("imageUrl", JSON.stringify(images));
-                alert("Upload Completed");
-              }}
-              onUploadError={(error: Error) => {
-                // Do something with the error.
-                alert(`ERROR! ${error.message}`);
-              }}
-            />
-            <Input
-              className="col-span-3 w-full hidden "
-              readOnly
-              {...register("imageUrl")}
-            />
-
-            <Button type="submit" disabled={!watch("imageUrl") || isPending}>
+            <Button type="submit" disabled={isPending}>
               {isPending ? "...saving" : "submit"}
             </Button>
           </form>

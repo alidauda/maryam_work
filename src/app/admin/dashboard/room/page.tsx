@@ -41,8 +41,8 @@ export default async function Hostel() {
           <TabsContent value={item} key={item}>
             <Card x-chunk="dashboard-06-chunk-0">
               <CardHeader>
-                <CardTitle>Propertys</CardTitle>
-                <CardDescription>Manage your Propertys</CardDescription>
+                <CardTitle>Rooms</CardTitle>
+                <CardDescription>Manage your Rooms</CardDescription>
               </CardHeader>
               <CardContent>
                 <DataTableHead>
@@ -55,7 +55,6 @@ export default async function Hostel() {
                         <DataTabel
                           props={{
                             ...room,
-                            images: room.images[0],
                           }}
                         />
                       ))}

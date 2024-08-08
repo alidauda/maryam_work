@@ -44,13 +44,13 @@ export default async function DashboardLayout({
             Dashboard
           </Link>
           <Link
-            href="/dashboard/hostel"
+            href="/admin/dashboard/property"
             className="text-muted-foreground transition-colors hover:text-foreground"
           >
             Property
           </Link>
           <Link
-            href="/dashboard/room"
+            href="/admin/dashboard/room"
             className="text-muted-foreground transition-colors hover:text-foreground"
           >
             room

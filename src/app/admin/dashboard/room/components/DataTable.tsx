@@ -19,11 +19,7 @@ interface DataTableProps {
   property: {
     name: string;
   };
-  images: {
-    id: number;
-    imageUrl: string;
-    roomId: number;
-  };
+
   id: number;
   name: string;
   description: string;
@@ -40,15 +36,6 @@ export default function DataTabel({ props }: { props: DataTableProps }) {
   const value = dateConvert(props.createdAt.toISOString());
   return (
     <TableRow key={props.id}>
-      <TableCell className="hidden sm:table-cell">
-        <Image
-          alt="Product image"
-          className="aspect-square rounded-md object-cover"
-          height="64"
-          src={props.images.imageUrl || ""}
-          width="64"
-        />
-      </TableCell>
       <TableCell className="font-medium">{props.name}</TableCell>
       <TableCell>
         <Badge

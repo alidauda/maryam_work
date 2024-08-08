@@ -7,17 +7,18 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+
 }
 
 model User {
   id       String    @id @default(uuid())
-  email    String
+  email    String  @unique
   name     String
   password String
   sessions Session[]
   bookings  Booking[]
   role     UserRole?     @default(GUEST) // Default role is STUDENT
+   preferences Json?
 
 }
 
@@ -56,7 +57,7 @@ model Room {
   bookings    Booking[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  images      Image[]  
+  
 }
 
 model Booking {
@@ -72,12 +73,8 @@ model Booking {
   updatedAt DateTime @updatedAt
 }
 
-model Image{
-  id Int @id @default(autoincrement())
-  imageUrl String
-  room Room @relation(fields: [roomId], references: [id])
-  roomId Int
-}
+
+
 
 enum UserRole {
 ADMIN

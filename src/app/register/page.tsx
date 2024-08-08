@@ -16,13 +16,17 @@ export default function LoginForm() {
     <div className="flex justify-center items-center h-screen">
       <Card className="w-full max-w-sm ">
         <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
+          <CardTitle className="text-2xl">Create Account</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account.
+            Enter your email below to create your account.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form className="grid gap-4" action={signup}>
+            <div className="grid gap-2">
+              <Label htmlFor="name">Name</Label>
+              <Input id="name" type="text" required name="name" />
+            </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input

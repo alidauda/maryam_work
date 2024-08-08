@@ -5,7 +5,7 @@ import { hash } from "@node-rs/argon2";
 import { cookies } from "next/headers";
 import { lucia } from "@/utils/auth";
 import { redirect } from "next/navigation";
-import { verify } from "@node-rs/argon2";
+import { generateIdFromEntropySize } from "lucia";
 
 interface ActionResult {
   error: string;
@@ -40,35 +40,24 @@ export async function signup(formData: FormData) {
     outputLen: 32,
     parallelism: 1,
   });
-  // 16 characters long
+  const userId = generateIdFromEntropySize(10); // 16 characters long
 
   // TODO: check if username is already used
   //
   try {
-    const user = await prisma.user.findFirst({
-      where: {
-        email: email,
-        role: UserRole.GUEST,
+    await prisma.user.create({
+      data: {
+        id: userId,
+        email,
+        password: passwordHash,
+        name: "admin",
+        role: UserRole.ADMIN,
       },
     });
-    if (!user) {
-      return {
-        error: "Incorrect username or password",
-      };
-    }
-    const validPassword = await verify(user.password, password, {
-      memoryCost: 19456,
-      timeCost: 2,
-      outputLen: 32,
-      parallelism: 1,
-    });
-    if (!validPassword) {
-      return {
-        error: "Incorrect username or password",
-      };
-    }
-    const session = await lucia.createSession(user.id, {
-      role: UserRole.GUEST,
+    console.log("user created");
+
+    const session = await lucia.createSession(userId, {
+      role: UserRole.ADMIN,
     });
     const sessionCookie = lucia.createSessionCookie(session.id);
     cookies().set(

@@ -5,7 +5,7 @@ import { hash } from "@node-rs/argon2";
 import { cookies } from "next/headers";
 import { lucia } from "@/utils/auth";
 import { redirect } from "next/navigation";
-import { verify } from "@node-rs/argon2";
+import { generateIdFromEntropySize } from "lucia";
 
 interface ActionResult {
   error: string;
@@ -14,6 +14,13 @@ interface ActionResult {
 export async function signup(formData: FormData) {
   console.log(formData.get("email"));
   const email = formData.get("email");
+  const name = formData.get("name");
+
+  if (typeof name != "string" || name.length < 3 || name.length > 31) {
+    return {
+      error: "Invalid name",
+    };
+  }
 
   // username must be between 4 ~ 31 characters, and only consists of lowercase letters, 0-9, -, and _
   // keep in mind some database (e.g. mysql) are case insensitive
@@ -40,35 +47,24 @@ export async function signup(formData: FormData) {
     outputLen: 32,
     parallelism: 1,
   });
-  // 16 characters long
+  const userId = generateIdFromEntropySize(10); // 16 characters long
 
   // TODO: check if username is already used
   //
   try {
-    const user = await prisma.user.findFirst({
-      where: {
-        email: email,
-        role: UserRole.GUEST,
+    await prisma.user.create({
+      data: {
+        id: userId,
+        email,
+        password: passwordHash,
+        name,
+        role: UserRole.ADMIN,
       },
     });
-    if (!user) {
-      return {
-        error: "Incorrect username or password",
-      };
-    }
-    const validPassword = await verify(user.password, password, {
-      memoryCost: 19456,
-      timeCost: 2,
-      outputLen: 32,
-      parallelism: 1,
-    });
-    if (!validPassword) {
-      return {
-        error: "Incorrect username or password",
-      };
-    }
-    const session = await lucia.createSession(user.id, {
-      role: UserRole.GUEST,
+    console.log("user created");
+
+    const session = await lucia.createSession(userId, {
+      role: UserRole.ADMIN,
     });
     const sessionCookie = lucia.createSessionCookie(session.id);
     cookies().set(

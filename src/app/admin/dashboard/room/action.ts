@@ -23,7 +23,7 @@ export async function createRoom(data: z.infer<typeof room_schema>) {
     if (!user) {
       throw new Error("Unauthorized: Only admins can create all property");
     }
-    const url = JSON.parse(data.imageUrl) as string[];
+
     const newProperty = await prisma.room.create({
       data: {
         name: data.name,
@@ -32,12 +32,6 @@ export async function createRoom(data: z.infer<typeof room_schema>) {
         capacity: parseInt(data.capacity),
         availableRoom: parseInt(data.availableroom),
         propertyId: parseInt(data.property),
-
-        images: {
-          create: url.map((url) => ({
-            imageUrl: url,
-          })),
-        },
       },
     });
   } catch (error) {
@@ -65,7 +59,6 @@ export const getRooms = async () => {
 
     const room = await prisma.room.findMany({
       include: {
-        images: true,
         property: {
           select: {
             name: true,

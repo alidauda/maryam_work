@@ -24,6 +24,10 @@ export default function LoginForm() {
         <CardContent>
           <form className="grid gap-4" action={signup}>
             <div className="grid gap-2">
+              <Label htmlFor="name">Name</Label>
+              <Input id="name" type="text" required name="name" />
+            </div>
+            <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
