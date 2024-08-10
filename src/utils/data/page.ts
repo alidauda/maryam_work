@@ -25,3 +25,16 @@ export async function get_total_bed() {
   const data = await prisma.bed.count();
   return data;
 }
+
+export function get_all_apartment() {
+  return prisma.property.findMany();
+}
+
+export async function get_rooms(id: number) {
+  const data = await prisma.room.findMany({
+    where: {
+      propertyId: id,
+    },
+  });
+  return data;
+}

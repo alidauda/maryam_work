@@ -48,7 +48,9 @@ export default function DataTabel({ props }: { props: DataTableProps }) {
           {props.status}
         </Badge>
       </TableCell>
-      <TableCell className="hidden md:table-cell"></TableCell>
+      <TableCell className="hidden md:table-cell">
+        {props.property.name}
+      </TableCell>
       <TableCell className="hidden md:table-cell">
         {props.availableRoom}
       </TableCell>

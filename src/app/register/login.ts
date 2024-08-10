@@ -75,5 +75,5 @@ export async function signup(formData: FormData) {
   } catch (e) {
     console.log(e);
   }
-  return redirect("/");
+  return redirect("/preference");
 }

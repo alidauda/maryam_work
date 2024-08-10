@@ -39,7 +39,7 @@ model Property {
   address     String
   imageUrl    String?
   status      PropertyStatus  @default(ACTIVE)
-  rooms       Room[]
+  rooms       Room[]     
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 }
@@ -51,7 +51,7 @@ model Room {
   availableRoom Int
   price       Float
   status      RoomStatus @default(AVAILABLE)
-  property    Property  @relation(fields: [propertyId], references: [id])
+  property    Property  @relation(fields: [propertyId], references: [id],onDelete: Cascade)
   propertyId  Int
   bookings    Booking[]
   createdAt   DateTime  @default(now())

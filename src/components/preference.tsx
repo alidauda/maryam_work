@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { $Enums } from "@prisma/client";
+import Spinner from "./spinner";
 
 interface Room {
   id: number;
@@ -58,18 +59,19 @@ export function Preferences({ property }: { property: Property[] }) {
     handleSubmit,
     register,
     formState: { errors },
+    clearErrors,
   } = useForm<RoommatePreferences>({
     resolver: zodResolver(roommatePreferencesSchema),
   });
   const [roomType, setRoomType] = useState("");
-
+  let isLoading = false;
   const onSubmit = (data: RoommatePreferences) => {
     console.log(data);
   };
 
   return (
     <div>
-      <section className="bg-primary py-20 md:py-32 h-screen">
+      <section className="bg-primary py-20 md:py-10 h-screen">
         <div className="container px-4 md:px-6">
           <div className="grid gap-8 md:grid-cols-2 md:items-center">
             <div className="space-y-4">
@@ -82,7 +84,7 @@ export function Preferences({ property }: { property: Property[] }) {
               </p>
             </div>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <Card className="bg-primary-foreground p-6 rounded-lg shadow-lg">
+              <Card className="bg-primary-foreground p-6 rounded-lg shadow-lg  overflow-y-scroll">
                 <CardContent className="grid gap-4">
                   <div>
                     <Label
@@ -92,7 +94,10 @@ export function Preferences({ property }: { property: Property[] }) {
                       Gender
                     </Label>
                     <Select {...register("gender", { required: true })}>
-                      <SelectTrigger>
+                      <SelectTrigger
+                        className={`${errors.gender ? "border-red-500" : ""}`}
+                        onFocus={() => clearErrors("gender")}
+                      >
                         <SelectValue placeholder="Select gender" />
                       </SelectTrigger>
                       <SelectContent>
@@ -101,32 +106,6 @@ export function Preferences({ property }: { property: Property[] }) {
                         <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
-                    {errors.gender && (
-                      <p className="text-red-500">{errors.gender.message}</p>
-                    )}
-                  </div>
-                  <div>
-                    <Label
-                      htmlFor="cleanliness"
-                      className="block mb-1 text-sm font-medium text-primary"
-                    >
-                      Cleanliness
-                    </Label>
-                    <Select {...register("cleanliness", { required: true })}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select cleanliness level" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="low">Low</SelectItem>
-                        <SelectItem value="moderate">Moderate</SelectItem>
-                        <SelectItem value="high">High</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {errors.cleanliness && (
-                      <p className="text-red-500">
-                        {errors.cleanliness.message}
-                      </p>
-                    )}
                   </div>
 
                   <div>
@@ -224,8 +203,16 @@ export function Preferences({ property }: { property: Property[] }) {
                       )}
                     </div>
                   )}
-                  <Button type="submit" className="w-full">
-                    Submit
+                  <Button type="submit" className="w-full relative py-3 px-3">
+                    {isLoading && (
+                      <span className="absolute inset-0 flex items-center justify-center py-4">
+                        <Spinner />
+                      </span>
+                    )}
+                    <span className={`${isLoading ? "invisible" : ""}`}>
+                      {" "}
+                      Submit
+                    </span>
                   </Button>
                 </CardContent>
               </Card>
