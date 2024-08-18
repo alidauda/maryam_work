@@ -26,6 +26,8 @@ To read more about using these font, please visit the Next.js documentation:
 import { User } from "lucia";
 import Link from "next/link";
 import { JSX, SVGProps } from "react";
+import { Button } from "./ui/button";
+import { logout } from "@/app/logout";
 
 export default function LandingPage({ user }: { user: User | null }) {
   return (
@@ -39,7 +41,7 @@ export default function LandingPage({ user }: { user: User | null }) {
           <MountainIcon className="h-6 w-6" />
           <span className="sr-only">Acme Accommodations</span>
         </Link>
-        <nav className="ml-auto flex gap-4 sm:gap-6">
+        <nav className="ml-auto flex gap-4 sm:gap-6 justify-center items-center">
           <Link
             href="/apartment"
             className="text-sm font-medium hover:underline underline-offset-4"
@@ -55,15 +57,43 @@ export default function LandingPage({ user }: { user: User | null }) {
             >
               Admin DashBoard
             </Link>
-          ) : null}
+          ) : (
+            <Link
+              href="/admin/dashboard"
+              className="text-sm font-medium hover:underline underline-offset-4"
+              prefetch={false}
+            >
+              My DashBoard
+            </Link>
+          )}
 
-          <Link
-            href="/register"
-            className="text-sm font-medium hover:underline underline-offset-4"
-            prefetch={false}
-          >
-            signup
-          </Link>
+          {user && !user.id ? (
+            <Link
+              href="/register"
+              className="text-sm font-medium hover:underline underline-offset-4"
+              prefetch={false}
+            >
+              SignUp{" "}
+            </Link>
+          ) : (
+            ""
+          )}
+
+          {user && user ? (
+            <form action={logout}>
+              <Button variant={"default"} type="submit">
+                Log Out{" "}
+              </Button>
+            </form>
+          ) : (
+            <Link
+              href="/login"
+              className="text-sm font-medium hover:underline underline-offset-4"
+              prefetch={false}
+            >
+              login
+            </Link>
+          )}
         </nav>
       </header>
 

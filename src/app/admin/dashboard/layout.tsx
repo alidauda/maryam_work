@@ -57,7 +57,7 @@ export default async function DashboardLayout({
             room
           </Link>
           <Link
-            href="/dashboard/bookings"
+            href="/admin/dashboard/bookings"
             className="text-muted-foreground transition-colors hover:text-foreground"
           >
             bookings

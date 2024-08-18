@@ -58,7 +58,7 @@ export default async function Apartment() {
                 <CardDescription>{apartment.address}</CardDescription>
               </CardHeader>
               <CardContent>
-                <img src={apartment.imageUrl!} className="w-full h-64" />
+                <img src={apartment.images[0].url!} className="w-full h-64" />
                 <div></div>
               </CardContent>
               <CardFooter>

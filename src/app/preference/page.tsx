@@ -2,6 +2,7 @@ import { Preferences } from "@/components/preference";
 import { validateRequest } from "@/utils/auth";
 import { redirect } from "next/navigation";
 import { getPropertyBy } from "../admin/dashboard/property/action";
+import Rquery from "@/utils/rquery";
 
 export default async function Component() {
   const { user } = await validateRequest();
@@ -11,5 +12,9 @@ export default async function Component() {
   const property = await getPropertyBy();
 
   console.log(property);
-  return <Preferences property={property} />;
+  return (
+    <Rquery>
+      <Preferences property={property} />;
+    </Rquery>
+  );
 }

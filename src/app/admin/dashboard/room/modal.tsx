@@ -38,6 +38,7 @@ interface PropertyData {
   }[];
 }
 export const room_schema = z.object({
+  name: z.string(),
   property: z.string(),
   price: z.string(),
   capacity: z.string(),
@@ -101,6 +102,10 @@ export default function RoomModal({ props }: { props: PropertyData }) {
         </DialogHeader>
         <div className=" py-4">
           <form onSubmit={handleSubmit(submit)} className="w-auto space-y-5 ">
+            <Label htmlFor="availableroom" className="text-right">
+              Room Name
+            </Label>
+            <Input className="col-span-3 w-full" {...register("name")} />
             <Label htmlFor="property" className="text-right">
               Apartment
             </Label>

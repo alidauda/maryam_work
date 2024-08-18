@@ -52,19 +52,20 @@ export async function signup(formData: FormData) {
   // TODO: check if username is already used
   //
   try {
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         id: userId,
         email,
         password: passwordHash,
         name,
-        role: UserRole.ADMIN,
+        role: UserRole.GUEST,
       },
     });
     console.log("user created");
 
     const session = await lucia.createSession(userId, {
-      role: UserRole.ADMIN,
+      role: user.role,
+      email,
     });
     const sessionCookie = lucia.createSessionCookie(session.id);
     cookies().set(
@@ -75,5 +76,5 @@ export async function signup(formData: FormData) {
   } catch (e) {
     console.log(e);
   }
-  return redirect("/preference");
+  return redirect("/");
 }

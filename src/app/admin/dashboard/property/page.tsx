@@ -27,12 +27,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import Modal from "./modal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getPropertyBy } from "./action";
 import { dateConvert } from "@/utils/date";
 import { cn } from "@/lib/utils";
 import { PropertyStatus } from "@prisma/client";
+import Modal from "./modal";
 
 export default async function Hostel() {
   const property = await getPropertyBy();
@@ -91,6 +91,10 @@ export default async function Hostel() {
                   {property &&
                     property.map((item) => {
                       const value = dateConvert(item.createdAt.toISOString());
+                      const image = item.images.filter(
+                        (item) => item.propertyId === item.id
+                      );
+
                       return (
                         <TableRow key={item.id}>
                           <TableCell className="hidden sm:table-cell">
@@ -98,7 +102,7 @@ export default async function Hostel() {
                               alt="Product image"
                               className="aspect-square rounded-md object-cover"
                               height="64"
-                              src={item.imageUrl || ""}
+                              src={item.images ? item.images[0].url : ""}
                               width="64"
                             />
                           </TableCell>
@@ -204,7 +208,7 @@ export default async function Hostel() {
                                 alt="Product image"
                                 className="aspect-square rounded-md object-cover"
                                 height="64"
-                                src={item.imageUrl || ""}
+                                src={""}
                                 width="64"
                               />
                             </TableCell>
@@ -310,7 +314,7 @@ export default async function Hostel() {
                                 alt="Product image"
                                 className="aspect-square rounded-md object-cover"
                                 height="64"
-                                src={item.imageUrl || ""}
+                                src={item.images[0].url || ""}
                                 width="64"
                               />
                             </TableCell>
@@ -419,7 +423,7 @@ export default async function Hostel() {
                                 alt="Product image"
                                 className="aspect-square rounded-md object-cover"
                                 height="64"
-                                src={item.imageUrl || ""}
+                                src={item.images[0].url || ""}
                                 width="64"
                               />
                             </TableCell>
@@ -527,7 +531,7 @@ export default async function Hostel() {
                                 alt="Product image"
                                 className="aspect-square rounded-md object-cover"
                                 height="64"
-                                src={item.imageUrl || ""}
+                                src={item.images[0].url || ""}
                                 width="64"
                               />
                             </TableCell>

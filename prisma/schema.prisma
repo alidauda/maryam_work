@@ -3,60 +3,44 @@
 generator client {
   provider = "prisma-client-js"
 }
-
+generator markdown {
+  provider = "prisma-markdown"
+  output   = "./ERD.md"
+  title    = "Shopping Mall"
+}
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
 
 }
 
-model User {
-  id       String    @id @default(uuid())
-  email    String  @unique
-  name     String
-  password String
-  sessions Session[]
-  bookings  Booking[]
-  role     UserRole?     @default(GUEST) // Default role is STUDENT
-   preferences Json?
-
-}
-
-model Session {
-  id        String   @id
-  userId    String
-  expiresAt DateTime
-  role      UserRole 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-
-
-model Property {
-  id          Int             @id @default(autoincrement())
-  name        String
-  description String
-  address     String
-  imageUrl    String?
-  status      PropertyStatus  @default(ACTIVE)
-  rooms       Room[]     
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-}
-
 model Room {
-  id          Int       @id @default(autoincrement())
+  id               Int       @id @default(autoincrement())
+  roomName         String
+  capacity         Int
+  availableSpots   Int
+  price            Float
+  status           RoomStatus @default(AVAILABLE)
+  property         Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyId       Int
+  bookings         Booking[]
+  currentOccupants User[]    // One-to-many relationship
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  Preference       Preference[]
+}
 
-  capacity    Int
-  availableRoom Int
-  price       Float
-  status      RoomStatus @default(AVAILABLE)
-  property    Property  @relation(fields: [propertyId], references: [id],onDelete: Cascade)
-  propertyId  Int
-  bookings    Booking[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  
+model User {
+  id                 String     @id @default(uuid())
+  email              String     @unique
+  name               String
+  password           String
+  sessions           Session[]
+  bookings           Booking[]
+  role               UserRole?  @default(GUEST)
+  preference         Preference?
+  currentlyOccupying Room?      @relation(fields: [currentRoomId], references: [id])
+  currentRoomId      Int?       // Optional, as user might not be occupying any room
 }
 
 model Booking {
@@ -68,11 +52,74 @@ model Booking {
   userId    String
   room      Room     @relation(fields: [roomId], references: [id])
   roomId    Int
+  payment   Payment?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 
+model Preference {
+  id              Int       @id @default(autoincrement())
+  user            User?     @relation(fields: [userId], references: [id])
+  userId          String?   @unique
+  sleepSchedule     String       // Scale of 1-5
+  course String 
+  roomType        Room?     @relation(fields: [roomTypeId], references: [id])
+  roomTypeId      Int?
+  genderPreference String
+}
+
+
+model Session {
+  id        String   @id
+  userId    String
+  expiresAt DateTime
+  email     String
+  role      UserRole 
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
+
+model Property {
+  id          Int             @id @default(autoincrement())
+  name        String
+  description String
+  address     String
+  images    Images[]
+  status      PropertyStatus  @default(ACTIVE)
+  rooms       Room[]     
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+}
+
+
+
+model Payment {
+  id        Int      @id @default(autoincrement())
+  amount    Float
+  status    PaymentStatus
+  booking   Booking  @relation(fields: [bookingId], references: [id])
+  bookingId Int @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+model Images{
+  id Int @id @default(autoincrement())
+  url String
+
+ property Property @relation(fields: [propertyId] ,references: [id] ,onDelete: Cascade)
+ propertyId Int
+}
 
 
 enum UserRole {

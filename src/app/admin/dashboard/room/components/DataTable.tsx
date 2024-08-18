@@ -23,7 +23,7 @@ interface DataTableProps {
   id: number;
 
   capacity: number;
-  availableRoom: number;
+  availableSpots: number;
   price: number;
   status: RoomStatus;
   propertyId: number;
@@ -52,7 +52,7 @@ export default function DataTabel({ props }: { props: DataTableProps }) {
         {props.property.name}
       </TableCell>
       <TableCell className="hidden md:table-cell">
-        {props.availableRoom}
+        {props.availableSpots}
       </TableCell>
       <TableCell className="hidden md:table-cell">{props.capacity}</TableCell>
       <TableCell className="hidden md:table-cell">{props.price}</TableCell>

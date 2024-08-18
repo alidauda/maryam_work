@@ -1,30 +1,20 @@
 import { User } from "@prisma/client";
 import prisma from "./db";
+import { validateRequest } from "./auth";
 
 async function recommendRoommates(
   userId: string,
   minMatchingPreferences: number = 2
 ): Promise<User[]> {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-  });
-
-  if (!user || !user.preferences) {
-    return [];
+  const { user } = await validateRequest();
+  if (!user) {
+    throw new Error("Unauthorized: User not logged in");
   }
-
-  const { gender, cleanliness, sleepSchedule } = user.preferences;
-
   const roommates = await prisma.user.findMany({
     where: {
-      id: { not: userId },
-      age: { gte: minAge, lte: maxAge },
-      gender: gender,
-      cleanliness: { equals: cleanliness },
-      sleepSchedule: { equals: sleepSchedule },
-    },
-    include: {
-      wantedRoommatePreferences: true,
+      id: {
+        not: userId,
+      },
     },
   });
 

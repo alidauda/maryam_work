@@ -27,14 +27,25 @@ export async function get_total_bed() {
 }
 
 export function get_all_apartment() {
-  return prisma.property.findMany();
+  return prisma.property.findMany({
+    include: {
+      images: true,
+    },
+  });
 }
 
 export async function get_rooms(id: number) {
-  const data = await prisma.room.findMany({
+  const data = await prisma.property.findUnique({
     where: {
-      propertyId: id,
+      id,
+    },
+    include: {
+      rooms: true,
+      images: true,
     },
   });
-  return data;
+
+  return {
+    data,
+  };
 }
