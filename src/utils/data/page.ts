@@ -1,4 +1,6 @@
 import prisma from "@/utils/db";
+import { validateRequest } from "../auth";
+import { redirect } from "next/navigation";
 
 export async function create_hostel() {
   const data = await prisma.hostel.create({
@@ -35,6 +37,18 @@ export function get_all_apartment() {
 }
 
 export async function get_rooms(id: number) {
+  const { user } = await validateRequest();
+  if (!user) {
+    throw new Error("no user");
+  }
+  const preference = await prisma.preference.findUnique({
+    where: {
+      userId: user.id,
+    },
+  });
+  if (!preference) {
+    redirect("/preference");
+  }
   const data = await prisma.property.findUnique({
     where: {
       id,

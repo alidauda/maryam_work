@@ -5,7 +5,6 @@ import Header from "@/components/header";
 
 import { validateRequest } from "@/utils/auth";
 import { redirect } from "next/navigation";
-import Rquery from "@/utils/rquery";
 
 export default async function Page({ params }: { params: { room: string } }) {
   const id = parseInt(params.room);
@@ -18,13 +17,8 @@ export default async function Page({ params }: { params: { room: string } }) {
   return (
     <>
       <Header />
-      <Rquery>
-        <Rooms
-          props={rooms.data!.rooms}
-          imageUrl={rooms.data!.images}
-          user={user}
-        />
-      </Rquery>
+
+      <Rooms imageUrl={rooms.data!.images} user={user} />
     </>
   );
 }

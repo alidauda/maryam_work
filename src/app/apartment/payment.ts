@@ -20,6 +20,17 @@ interface PaymentData {
 export async function createBookingAndPayment(paymentData: PaymentData) {
   try {
     const { userId, roomId, startDate, endDate, amount } = paymentData;
+    const existingBooking = await prisma.booking.findFirst({
+      where: {
+        userId: userId,
+        status: "CONFIRMED",
+        endDate: { gte: new Date() }, // Check for active bookings
+      },
+    });
+
+    if (existingBooking) {
+      throw new Error("User already has an active booking");
+    }
     const room = await prisma.room.findUnique({
       where: { id: roomId },
     });

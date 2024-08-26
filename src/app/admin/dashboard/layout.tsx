@@ -137,7 +137,7 @@ export default async function DashboardLayout({
           </DropdownMenu>
         </div>
       </header>
-      <Rquery> {children}</Rquery>
+      {children}
     </div>
   );
 }

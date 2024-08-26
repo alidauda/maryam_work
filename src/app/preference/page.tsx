@@ -9,12 +9,10 @@ export default async function Component() {
   if (!user) {
     return redirect("/login");
   }
-  const property = await getPropertyBy();
 
-  console.log(property);
   return (
     <Rquery>
-      <Preferences property={property} />;
+      <Preferences />;
     </Rquery>
   );
 }

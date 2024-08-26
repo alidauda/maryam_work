@@ -26,76 +26,23 @@ To read more about using these font, please visit the Next.js documentation:
 import { User } from "lucia";
 import Link from "next/link";
 import { JSX, SVGProps } from "react";
-import { Button } from "./ui/button";
-import { logout } from "@/app/logout";
 
-export default function LandingPage({ user }: { user: User | null }) {
+import Header from "./header";
+import { get_all_apartment } from "@/utils/data/page";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "./ui/card";
+
+export default async function LandingPage({ user }: { user: User | null }) {
+  const apartments = await get_all_apartment();
   return (
     <div className="flex flex-col min-h-[100dvh]">
-      <header className="px-4 lg:px-6 h-14 flex items-center">
-        <Link
-          href="/"
-          className="flex items-center justify-center"
-          prefetch={false}
-        >
-          <MountainIcon className="h-6 w-6" />
-          <span className="sr-only">Acme Accommodations</span>
-        </Link>
-        <nav className="ml-auto flex gap-4 sm:gap-6 justify-center items-center">
-          <Link
-            href="/apartment"
-            className="text-sm font-medium hover:underline underline-offset-4"
-            prefetch={false}
-          >
-            Apartment
-          </Link>
-          {user && user.role === "ADMIN" ? (
-            <Link
-              href="/admin/dashboard"
-              className="text-sm font-medium hover:underline underline-offset-4"
-              prefetch={false}
-            >
-              Admin DashBoard
-            </Link>
-          ) : (
-            <Link
-              href="/admin/dashboard"
-              className="text-sm font-medium hover:underline underline-offset-4"
-              prefetch={false}
-            >
-              My DashBoard
-            </Link>
-          )}
-
-          {user && !user.id ? (
-            <Link
-              href="/register"
-              className="text-sm font-medium hover:underline underline-offset-4"
-              prefetch={false}
-            >
-              SignUp{" "}
-            </Link>
-          ) : (
-            ""
-          )}
-
-          {user && user ? (
-            <form action={logout}>
-              <Button variant={"default"} type="submit">
-                Log Out{" "}
-              </Button>
-            </form>
-          ) : (
-            <Link
-              href="/login"
-              className="text-sm font-medium hover:underline underline-offset-4"
-              prefetch={false}
-            >
-              login
-            </Link>
-          )}
-        </nav>
-      </header>
+      <Header />
 
       <main className="flex-1">
         <section className="w-full h-screen relative overflow-hidden">
@@ -125,6 +72,32 @@ export default function LandingPage({ user }: { user: User | null }) {
             </Link>
           </div>
         </section>
+      </main>
+      <main className="flex-1 p-5">
+        <h1 className="text-center font-bold text-3xl">OUR APARTMENT </h1>
+        <div className="grid grid-cols-3  gap-4 px-32">
+          {apartments &&
+            apartments.map((apartment) => (
+              <Card key={apartment.id}>
+                <CardHeader>
+                  <CardTitle>{apartment.name}</CardTitle>
+                  <CardDescription>{apartment.address}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <img src={apartment.images[0].url!} className="w-full h-64" />
+                  <div></div>
+                </CardContent>
+                <CardFooter>
+                  <Link
+                    href={`/apartment/${apartment.id}`}
+                    className="px-5 py-2 rounded bg-black text-white"
+                  >
+                    View
+                  </Link>
+                </CardFooter>
+              </Card>
+            ))}
+        </div>
       </main>
       <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
         <p className="text-xs text-muted-foreground">

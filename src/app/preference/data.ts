@@ -4,18 +4,21 @@ import { validateRequest } from "@/utils/auth";
 import prisma from "@/utils/db";
 import { redirect } from "next/navigation";
 
-import { z } from "zod";
 import { zfd } from "zod-form-data";
 
 const schema = zfd.formData({
   gender: zfd.text(),
-  sleepSchedule: zfd.text(),
+  sleepSchedule: zfd.numeric(),
+  cleanliness: zfd.numeric(),
 
-  course: zfd.text(),
+  price: zfd.text(),
+  quietness: zfd.numeric(),
+  socialness: zfd.numeric(),
 });
 export async function createPreference(formData: FormData) {
   try {
     const dataObject = schema.safeParse(formData);
+
     if (!dataObject.success) {
       throw new Error("Invalid data");
     }
@@ -37,12 +40,15 @@ export async function createPreference(formData: FormData) {
         userId: user.id,
         genderPreference: data.gender,
         sleepSchedule: data.sleepSchedule,
-        course: data.course,
+        quietness: data.quietness,
+        socialness: data.socialness,
+        cleanliness: data.cleanliness,
+        pricePreference: parseInt(data.price),
       },
     });
     console.log("New preference created:", newPreference);
   } catch (e) {
-    throw new Error("Error creating preference:");
+    console.log(e);
   }
   redirect("/apartment");
 }

@@ -16,6 +16,7 @@ erDiagram
   Int propertyId FK
   DateTime createdAt
   DateTime updatedAt
+  String imageUrl
 }
 "User" {
   String id PK
@@ -38,10 +39,13 @@ erDiagram
 "Preference" {
   Int id PK
   String userId FK "nullable"
-  String sleepSchedule
-  String course
-  Int roomTypeId FK "nullable"
+  Int sleepSchedule
+  Int quietness
+  Int socialness
+  Int cleanliness
   String genderPreference
+  Int pricePreference
+  Int roomId FK "nullable"
 }
 "Session" {
   String id PK
@@ -77,7 +81,7 @@ erDiagram
 "Booking" }o--|| "User" : user
 "Booking" }o--|| "Room" : room
 "Preference" |o--o| "User" : user
-"Preference" }o--o| "Room" : roomType
+"Preference" }o--o| "Room" : Room
 "Session" }o--|| "User" : user
 "Payment" |o--|| "Booking" : booking
 "Images" }o--|| "Property" : property
@@ -95,6 +99,7 @@ erDiagram
   - `propertyId`: 
   - `createdAt`: 
   - `updatedAt`: 
+  - `imageUrl`: 
 
 ### `User`
 
@@ -124,9 +129,12 @@ erDiagram
   - `id`: 
   - `userId`: 
   - `sleepSchedule`: 
-  - `course`: 
-  - `roomTypeId`: 
+  - `quietness`: 
+  - `socialness`: 
+  - `cleanliness`: 
   - `genderPreference`: 
+  - `pricePreference`: 
+  - `roomId`: 
 
 ### `Session`
 

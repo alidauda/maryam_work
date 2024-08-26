@@ -1,46 +1,80 @@
 "use server";
+"use server";
 
 import { validateRequest } from "@/utils/auth";
 import prisma from "@/utils/db";
 import { UserRole } from "@prisma/client";
-import { z } from "zod";
-import { room_schema } from "./modal";
 import { revalidatePath } from "next/cache";
 
-export async function createRoom(data: z.infer<typeof room_schema>) {
+import { zfd } from "zod-form-data";
+import { UTApi } from "uploadthing/server";
+const utapi = new UTApi();
+// Define the schema using zod-form-data
+const roomSchema = zfd.formData({
+  name: zfd.text(),
+  property: zfd.numeric(),
+  price: zfd.numeric(),
+  capacity: zfd.numeric(),
+  availableroom: zfd.numeric(),
+  image: zfd.file(),
+});
+
+export async function createRoom(formData: FormData) {
   try {
     const { user: userId } = await validateRequest();
     if (!userId) {
       throw new Error("Unauthorized: User not logged in");
     }
+
     const user = await prisma.user.findUnique({
       where: {
         id: userId?.id,
-
         role: UserRole.ADMIN,
       },
     });
+
     if (!user) {
-      throw new Error("Unauthorized: Only admins can create all property");
+      throw new Error("Unauthorized: Only admins can create rooms");
     }
 
-    const newProperty = await prisma.room.create({
+    // Parse and validate the form data
+    const validatedData = roomSchema.parse(formData);
+
+    // Handle file upload
+    let imageUrl = null;
+    if (validatedData.image) {
+      try {
+        const uploadResults = await utapi.uploadFiles([validatedData.image]);
+        if (uploadResults[0]?.data?.url) {
+          imageUrl = uploadResults[0].data.url;
+        } else {
+          throw new Error("File upload failed");
+        }
+      } catch (uploadError) {
+        console.error("Error uploading file:", uploadError);
+        throw new Error("File upload failed");
+      }
+    }
+
+    const newRoom = await prisma.room.create({
       data: {
-        roomName: data.name,
-        price: parseInt(data.price),
-        capacity: parseInt(data.capacity),
-        availableSpots: parseInt(data.availableroom),
-        propertyId: parseInt(data.property),
+        roomName: validatedData.name,
+        price: validatedData.price,
+        capacity: validatedData.capacity,
+        availableSpots: validatedData.availableroom,
+        propertyId: validatedData.property,
+        imageUrl: imageUrl!,
       },
     });
+
+    revalidatePath("/dashboard/room");
+    return newRoom;
   } catch (error) {
-    console.error("Error creating property:", error);
+    console.error("Error creating room:", error);
     throw error;
   } finally {
     await prisma.$disconnect();
   }
-  revalidatePath("/dashboard/room");
-  // Check if the user is an admin
 }
 
 export const getRooms = async () => {

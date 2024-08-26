@@ -3,107 +3,105 @@
 generator client {
   provider = "prisma-client-js"
 }
+
 generator markdown {
   provider = "prisma-markdown"
   output   = "./ERD.md"
   title    = "Shopping Mall"
 }
-datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
 
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Room {
-  id               Int       @id @default(autoincrement())
+  id               Int          @id @default(autoincrement())
   roomName         String
   capacity         Int
   availableSpots   Int
   price            Float
-  status           RoomStatus @default(AVAILABLE)
-  property         Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  status           RoomStatus   @default(AVAILABLE)
+  property         Property     @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   propertyId       Int
   bookings         Booking[]
-  currentOccupants User[]    // One-to-many relationship
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  currentOccupants User[] // One-to-many relationship
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
   Preference       Preference[]
+  imageUrl         String
 }
 
 model User {
-  id                 String     @id @default(uuid())
-  email              String     @unique
+  id                 String      @id @default(uuid())
+  email              String      @unique
   name               String
   password           String
   sessions           Session[]
   bookings           Booking[]
-  role               UserRole?  @default(GUEST)
+  role               UserRole?   @default(GUEST)
   preference         Preference?
-  currentlyOccupying Room?      @relation(fields: [currentRoomId], references: [id])
-  currentRoomId      Int?       // Optional, as user might not be occupying any room
+  currentlyOccupying Room?       @relation(fields: [currentRoomId], references: [id])
+  currentRoomId      Int? // Optional, as user might not be occupying any room
 }
 
 model Booking {
-  id        Int      @id @default(autoincrement())
+  id        Int           @id @default(autoincrement())
   startDate DateTime
   endDate   DateTime
   status    BookingStatus @default(PENDING)
-  user      User     @relation(fields: [userId], references: [id])
+  user      User          @relation(fields: [userId], references: [id])
   userId    String
-  room      Room     @relation(fields: [roomId], references: [id])
+  room      Room          @relation(fields: [roomId], references: [id])
   roomId    Int
   payment   Payment?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 }
-
 
 model Preference {
-  id              Int       @id @default(autoincrement())
-  user            User?     @relation(fields: [userId], references: [id])
-  userId          String?   @unique
-  sleepSchedule     String       // Scale of 1-5
-  course String 
-  roomType        Room?     @relation(fields: [roomTypeId], references: [id])
-  roomTypeId      Int?
+  id            Int     @id @default(autoincrement())
+  user          User?   @relation(fields: [userId], references: [id])
+  userId        String? @unique
+  sleepSchedule Int // Scale of 1-5
+  quietness     Int
+  socialness    Int
+cleanliness Int
   genderPreference String
+  pricePreference  Int
+  Room             Room?  @relation(fields: [roomId], references: [id])
+  roomId           Int?
 }
-
 
 model Session {
   id        String   @id
   userId    String
   expiresAt DateTime
   email     String
-  role      UserRole 
+  role      UserRole
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-
-
 model Property {
-  id          Int             @id @default(autoincrement())
+  id          Int            @id @default(autoincrement())
   name        String
   description String
   address     String
-  images    Images[]
-  status      PropertyStatus  @default(ACTIVE)
-  rooms       Room[]     
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-
+  images      Images[]
+  status      PropertyStatus @default(ACTIVE)
+  rooms       Room[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 }
 
-
-
 model Payment {
-  id        Int      @id @default(autoincrement())
+  id        Int           @id @default(autoincrement())
   amount    Float
   status    PaymentStatus
-  booking   Booking  @relation(fields: [bookingId], references: [id])
-  bookingId Int @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  booking   Booking       @relation(fields: [bookingId], references: [id])
+  bookingId Int           @unique
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 }
 
 enum PaymentStatus {
@@ -113,18 +111,17 @@ enum PaymentStatus {
   REFUNDED
 }
 
-model Images{
-  id Int @id @default(autoincrement())
+model Images {
+  id  Int    @id @default(autoincrement())
   url String
 
- property Property @relation(fields: [propertyId] ,references: [id] ,onDelete: Cascade)
- propertyId Int
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyId Int
 }
 
-
 enum UserRole {
-ADMIN
-GUEST
+  ADMIN
+  GUEST
 }
 
 enum BookingStatus {
@@ -146,5 +143,3 @@ enum RoomStatus {
   UNDER_MAINTENANCE
   OUT_OF_SERVICE
 }
-
-

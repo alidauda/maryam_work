@@ -8,19 +8,11 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@/components/ui/label";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, UploadIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { UploadDropzone } from "@/utils/uploadthing";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import {
-  QueryClient,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { createRoom } from "./action";
 import {
   Select,
@@ -29,7 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { url } from "inspector";
 
 interface PropertyData {
   property: {
@@ -37,44 +28,33 @@ interface PropertyData {
     id: number;
   }[];
 }
-export const room_schema = z.object({
-  name: z.string(),
-  property: z.string(),
-  price: z.string(),
-  capacity: z.string(),
-  availableroom: z.string(),
-});
+
 export default function RoomModal({ props }: { props: PropertyData }) {
   const [open, setOpen] = useState(false);
-  const query = useQueryClient();
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      name: "",
-      description: "",
-      address: "",
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-      price: "",
-      capacity: "",
-      availableroom: "",
-      property: "",
-    },
-    resolver: zodResolver(room_schema),
-  });
   const { mutate, isPending } = useMutation({
     mutationFn: createRoom,
     onSuccess: () => {
       setOpen(false);
     },
+    onError: (error) => {
+      console.error("Error creating room:", error);
+    },
   });
 
-  const submit = (data: z.infer<typeof room_schema>) => {
-    mutate(data);
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    mutate(formData);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    }
   };
 
   return (
@@ -82,7 +62,6 @@ export default function RoomModal({ props }: { props: PropertyData }) {
       open={open}
       onOpenChange={(e) => {
         setOpen(e);
-        console.log(e);
       }}
     >
       <DialogTrigger asChild>
@@ -93,24 +72,24 @@ export default function RoomModal({ props }: { props: PropertyData }) {
           </span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-full max-h-[80vh] overflow-y-auto">
+      <DialogContent className="w-full max-h-[80vh] flex flex-col overflow-scroll">
         <DialogHeader>
-          <DialogTitle> Create a new Room</DialogTitle>
+          <DialogTitle>Create a new Room</DialogTitle>
           <DialogDescription>
             Create a new room for your property
           </DialogDescription>
         </DialogHeader>
-        <div className=" py-4">
-          <form onSubmit={handleSubmit(submit)} className="w-auto space-y-5 ">
-            <Label htmlFor="availableroom" className="text-right">
+        <div className="py-4">
+          <form onSubmit={handleSubmit} className="w-auto space-y-5">
+            <Label htmlFor="name" className="text-right">
               Room Name
             </Label>
-            <Input className="col-span-3 w-full" {...register("name")} />
+            <Input className="w-full" name="name" id="name" required />
+
             <Label htmlFor="property" className="text-right">
               Apartment
             </Label>
-
-            <Select onValueChange={(value) => setValue("property", value)}>
+            <Select name="property">
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select apartment" />
               </SelectTrigger>
@@ -126,25 +105,52 @@ export default function RoomModal({ props }: { props: PropertyData }) {
             <Label htmlFor="price" className="text-right">
               Price
             </Label>
-            <Input className="col-span-3 w-full" {...register("price")} />
+            <Input className="w-full" name="price" id="price" required />
+
             <Label htmlFor="capacity" className="text-right">
               Capacity
             </Label>
-            <Input className="col-span-3 w-full" {...register("capacity")} />
+            <Input className="w-full" name="capacity" id="capacity" required />
+
             <Label htmlFor="availableroom" className="text-right">
               Available Room
             </Label>
             <Input
-              className="col-span-3 w-full"
-              {...register("availableroom")}
+              className="w-full"
+              name="availableroom"
+              id="availableroom"
+              required
             />
 
+            <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed border-primary rounded-md bg-primary/10 cursor-pointer transition-colors hover:bg-primary/20 relative ">
+              <UploadIcon className="h-10 w-10 text-primary" />
+              <div className="mt-4 text-primary font-medium">
+                Click to upload an image
+              </div>
+              <input
+                type="file"
+                onChange={handleFileChange}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                name="image"
+                accept="image/*"
+              />
+            </div>
+
+            {previewUrl && (
+              <div className="mt-4">
+                <img
+                  src={previewUrl}
+                  alt="Room preview"
+                  className="max-w-full h-auto"
+                />
+              </div>
+            )}
+
             <Button type="submit" disabled={isPending}>
-              {isPending ? "...saving" : "submit"}
+              {isPending ? "...saving" : "Create"}
             </Button>
           </form>
         </div>
-
         <DialogFooter></DialogFooter>
       </DialogContent>
     </Dialog>
