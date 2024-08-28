@@ -21,6 +21,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import useUpLoadHook from "./uploadhook";
 import { zfd } from "zod-form-data";
+import { toast } from "sonner";
 
 export const schema = z.object({
   name: z.string().min(1, { message: "Required" }),
@@ -48,6 +49,7 @@ export default function Modal() {
     mutationFn: createProperty,
     onSuccess: () => {
       setOpen(false);
+      toast.success("Property Created Successfully");
     },
     onError: (error) => {
       console.error("Error creating property:", error);

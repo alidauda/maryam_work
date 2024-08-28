@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo, JSX, SVGProps } from "react";
+import { JSX, SVGProps } from "react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { PaystackButton, usePaystackPayment } from "react-paystack";
@@ -23,6 +24,7 @@ import {
   TooltipTrigger,
 } from "./ui/tooltip";
 import { Progress } from "./ui/progress";
+import Footer from "./footer";
 
 interface Room {
   id: number;
@@ -69,6 +71,9 @@ export default function Rooms({
 
   const { mutate } = useMutation({
     mutationFn: createBookingAndPayment,
+    onSuccess: () => {
+      toast.success("Booking successful");
+    },
   });
 
   const { data: bookingState, isLoading: isLoadingBookingState } = useQuery({
@@ -81,147 +86,166 @@ export default function Rooms({
   }
 
   return (
-    <div className="w-full px-24 py-8 bg-gray-200 h-full space-y-5">
-      <div className="relative">
-        <img
-          src={imageUrl[0].url}
-          alt="Apartment"
-          className="w-full h-[300px] rounded-xl shadow-md"
-        />
-        <h1 className="text-5xl font-extrabold absolute top-10 left-10 text-white">
-          Available Rooms
-        </h1>
-      </div>
+    <div className="bg-gray-100 min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="relative mb-8">
+          <div className="w-full h-64 rounded-xl overflow-hidden">
+            <Image
+              src={imageUrl[0].url}
+              alt="Available Rooms"
+              layout="fill"
+              objectFit="cover"
+              className="w-full h-full"
+            />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-700 to-transparent opacity-75 rounded-xl"></div>
+          <h1 className="text-4xl md:text-5xl font-extrabold absolute top-1/2 left-8 transform -translate-y-1/2 text-white">
+            Available Rooms
+          </h1>
+        </div>
 
-      <div className="flex justify-between items-center mb-6"></div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {data &&
-          data.map((room: Room) => (
-            <Card
-              key={room.id}
-              className="flex flex-col shadow-md overflow-hidden"
-            >
-              <div className="relative w-full h-48">
-                <Image
-                  src={room.imageUrl}
-                  alt={`Room in ${room.property.name}`}
-                  layout="fill"
-                  objectFit="cover"
-                />
-              </div>
-              <CardContent className="flex flex-col items-start gap-4 p-4 flex-grow">
-                <div className="flex items-center justify-between w-full">
-                  <h3 className="text-xl font-bold">Room of {room.capacity}</h3>
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                      room.status === "AVAILABLE"
-                        ? "bg-green-100 text-green-600"
-                        : "bg-red-100 text-red-600"
-                    }`}
-                  >
-                    {room.status}
-                  </span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {data &&
+            data.map((room: Room) => (
+              <Card
+                key={room.id}
+                className="flex flex-col overflow-hidden transition-shadow duration-300 hover:shadow-lg"
+              >
+                <div className="relative w-full h-48">
+                  <Image
+                    src={room.imageUrl}
+                    alt={`Room in ${room.property.name}`}
+                    layout="fill"
+                    objectFit="cover"
+                  />
                 </div>
-                <div className="flex flex-col w-full gap-2">
-                  <div className="flex items-center gap-2">
-                    <HomeIcon className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm">{room.property.name}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <MapPinIcon className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm">{room.property.address}</span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center gap-2">
-                    <UserIcon className="w-4 h-4" />
-                    <span>
-                      <span className="text-muted-foreground">Room of</span>{" "}
-                      {room.capacity}
+                <CardContent className="flex flex-col items-start gap-4 p-6 flex-grow">
+                  <div className="flex items-center justify-between w-full">
+                    <h3 className="text-xl font-bold text-gray-900">
+                      Room of {room.capacity}
+                    </h3>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                        room.status === "AVAILABLE"
+                          ? "bg-green-100 text-green-600"
+                          : "bg-red-100 text-red-600"
+                      }`}
+                    >
+                      {room.status}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <CalendarIcon className="w-4 h-4" />
-                    <span>{room.availableSpots} available</span>
+                  <div className="flex flex-col w-full gap-2 text-gray-600">
+                    <div className="flex items-center gap-2">
+                      <HomeIcon className="w-4 h-4" />
+                      <span className="text-sm">{room.property.name}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MapPinIcon className="w-4 h-4" />
+                      <span className="text-sm">{room.property.address}</span>
+                    </div>
                   </div>
-                </div>
-                <div className="w-full">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium">
-                      Match Percentage
+                  <div className="flex items-center justify-between w-full text-gray-600">
+                    <div className="flex items-center gap-2">
+                      <UserIcon className="w-4 h-4" />
+                      <span>
+                        <span className="text-gray-400">Room of</span>{" "}
+                        {room.capacity}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CalendarIcon className="w-4 h-4" />
+                      <span>{room.availableSpots} available</span>
+                    </div>
+                  </div>
+                  <div className="w-full">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-700">
+                        Match Percentage
+                      </span>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <InfoIcon className="w-4 h-4 text-gray-400" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>
+                              This shows how well your preferences match with
+                              the room's current occupants.
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                    <Progress
+                      value={room.matchPercentage}
+                      className="h-2 bg-gray-200"
+                    >
+                      <div
+                        className="h-full bg-purple-600 rounded-full"
+                        style={{ width: `${room.matchPercentage}%` }}
+                      ></div>
+                    </Progress>
+                    <span className="text-sm text-gray-500">
+                      {room.matchPercentage}% match
                     </span>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <InfoIcon className="w-4 h-4 text-muted-foreground" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>
-                            This shows how well your preferences match with the
-                            room's current occupants.
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
                   </div>
-                  <Progress value={room.matchPercentage} className="h-2" />
-                  <span className="text-sm text-muted-foreground">
-                    {room.matchPercentage}% match
-                  </span>
-                </div>
-                <div className="flex items-center justify-between w-full mt-auto">
-                  <h4 className="text-lg font-bold">
-                    ₦{room.price.toLocaleString()}/month
-                  </h4>
-                  {room.availableSpots > 0 &&
-                  !isLoadingBookingState &&
-                  !bookingState!.hasActiveBooking ? (
-                    <PaystackButton
-                      className="bg-primary text-primary-foreground hover:bg-primary/90 relative z-30 px-4 py-2 rounded-md text-sm font-medium"
-                      text="Book Now"
-                      publicKey="pk_test_37335d37c9fb118d8a917de0a58a8efde1bb96c4"
-                      amount={room.price * 100} // amount in kobo
-                      email={user.email}
-                      metadata={{
-                        custom_fields: [
-                          {
-                            display_name: "Room",
-                            variable_name: "room",
-                            value: room.id,
-                          },
-                        ],
-                      }}
-                      onSuccess={(reference) => {
-                        console.log(reference);
-                        mutate({
-                          userId: user.id,
-                          roomId: room.id,
-                          amount: room.price,
-                          paymentData: reference,
-                          endDate: new Date(),
-                          startDate: new Date(),
-                        });
-                      }}
-                      onClose={() => console.log("Payment canceled")}
-                    />
-                  ) : (
-                    <Button disabled className="bg-muted text-muted-foreground">
-                      {isLoadingBookingState
-                        ? "Loading..."
-                        : bookingState!.hasActiveBooking
-                        ? "Already Booked"
-                        : "Not Available"}
-                    </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  <div className="flex items-center justify-between w-full mt-auto">
+                    <h4 className="text-lg font-bold text-gray-900">
+                      ₦{room.price.toLocaleString()}/month
+                    </h4>
+                    {room.availableSpots > 0 &&
+                    !isLoadingBookingState &&
+                    !bookingState!.hasActiveBooking ? (
+                      <PaystackButton
+                        className="bg-yellow-500 text-gray-900 hover:bg-yellow-400 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+                        text="Book Now"
+                        publicKey="pk_test_37335d37c9fb118d8a917de0a58a8efde1bb96c4"
+                        amount={room.price * 100} // amount in kobo
+                        email={user.email}
+                        metadata={{
+                          custom_fields: [
+                            {
+                              display_name: "Room",
+                              variable_name: "room",
+                              value: room.id,
+                            },
+                          ],
+                        }}
+                        onSuccess={(reference) => {
+                          console.log(reference);
+                          mutate({
+                            userId: user.id,
+                            roomId: room.id,
+                            amount: room.price,
+                            paymentData: reference,
+                            endDate: new Date(),
+                            startDate: new Date(),
+                          });
+                        }}
+                        onClose={() => console.log("Payment canceled")}
+                      />
+                    ) : (
+                      <Button
+                        disabled
+                        className="bg-gray-300 text-gray-500 cursor-not-allowed"
+                      >
+                        {isLoadingBookingState
+                          ? "Loading..."
+                          : bookingState!.hasActiveBooking
+                          ? "Booked"
+                          : "Not Available"}
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+        </div>
       </div>
+      <Footer />
     </div>
   );
 }
-
 function CalendarIcon(
   props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) {

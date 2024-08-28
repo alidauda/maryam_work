@@ -38,9 +38,4 @@ export default async function MyDashBoardLayout({
   );
 }
 
-const navItems = [
-  { icon: Home, label: "Bookings", link: "/mydashboard" },
-  { icon: Users, label: "roommate", link: "/mydashboard/roommate" },
-  { icon: BarChart, label: "Analytics" },
-  { icon: Settings, label: "Settings" },
-];
+const navItems = [{ icon: Home, label: "Bookings", link: "/mydashboard" }];

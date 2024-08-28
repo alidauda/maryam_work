@@ -72,6 +72,11 @@ export async function createBookingAndPayment(paymentData: PaymentData) {
         where: { id: roomId },
         data: {
           availableSpots: { decrement: 1 },
+          currentOccupants: {
+            connect: {
+              id: userId,
+            },
+          },
         },
       });
 

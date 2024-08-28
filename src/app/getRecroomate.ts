@@ -1,4 +1,3 @@
-// app/actions/roomRecommendations.ts
 "use server";
 
 import { validateRequest } from "@/utils/auth";
@@ -75,9 +74,8 @@ type preference = {
   sleepSchedule: number;
   quietness: number;
   socialness: number;
-  genderPreference: string;
-  pricePreference: number;
 };
+
 // Calculate match percentage based on preferences
 const calculateMatchPercentage = (
   userPreferences: preference,

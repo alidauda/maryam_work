@@ -33,6 +33,7 @@ import { dateConvert } from "@/utils/date";
 import { cn } from "@/lib/utils";
 import { PropertyStatus } from "@prisma/client";
 import Modal from "./modal";
+import Link from "next/link";
 
 export default async function Hostel() {
   const property = await getPropertyBy();
@@ -148,8 +149,17 @@ export default async function Hostel() {
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                <DropdownMenuItem>Edit</DropdownMenuItem>
+                                <Link
+                                  href={`/admin/dashboard/property/${item.id}/edit`}
+                                >
+                                  <DropdownMenuItem>Edit</DropdownMenuItem>
+                                </Link>
                                 <DropdownMenuItem>Delete</DropdownMenuItem>
+                                <Link
+                                  href={`/admin/dashboard/property/${item.id}/view`}
+                                >
+                                  <DropdownMenuItem>View</DropdownMenuItem>
+                                </Link>
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </TableCell>

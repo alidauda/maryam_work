@@ -2,12 +2,6 @@ import prisma from "@/utils/db";
 import { validateRequest } from "../auth";
 import { redirect } from "next/navigation";
 
-export async function create_hostel() {
-  const data = await prisma.hostel.create({
-    data: {},
-  });
-}
-
 export async function get_total_count() {
   const data = await prisma.$transaction([
     prisma.property.count(),
@@ -32,6 +26,7 @@ export function get_all_apartment() {
   return prisma.property.findMany({
     include: {
       images: true,
+      rooms: true,
     },
   });
 }

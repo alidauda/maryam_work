@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
 
 interface PropertyData {
   property: {
@@ -37,6 +38,7 @@ export default function RoomModal({ props }: { props: PropertyData }) {
     mutationFn: createRoom,
     onSuccess: () => {
       setOpen(false);
+      toast.success("Room Created Successfully");
     },
     onError: (error) => {
       console.error("Error creating room:", error);
