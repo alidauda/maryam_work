@@ -33,7 +33,7 @@ import { getPropertyBy } from "./action";
 import { dateConvert } from "@/utils/date";
 import { cn } from "@/lib/utils";
 import { PropertyStatus } from "@prisma/client";
-import Modal from "./modal";
+
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
