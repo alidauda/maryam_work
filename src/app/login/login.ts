@@ -1,44 +1,24 @@
 "use server";
 import prisma from "@/utils/db";
 import { UserRole } from "@prisma/client";
-import { hash } from "@node-rs/argon2";
+
 import { cookies } from "next/headers";
 import { lucia } from "@/utils/auth";
 import { redirect } from "next/navigation";
 import { verify } from "@node-rs/argon2";
-import { generateIdFromEntropySize } from "lucia";
+import { z } from "zod";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
-interface ActionResult {
-  error: string;
-}
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6).max(255),
+});
 
-export async function login(formData: FormData) {
-  console.log(formData.get("email"));
-  const email = formData.get("email");
+type LoginType = z.infer<typeof loginSchema>;
 
-  // username must be between 4 ~ 31 characters, and only consists of lowercase letters, 0-9, -, and _
-  // keep in mind some database (e.g. mysql) are case insensitive
-  if (typeof email !== "string" || email.length < 3 || email.length > 31) {
-    return {
-      error: "Invalid username",
-    };
-  }
-  const password = formData.get("password");
-  if (
-    typeof password !== "string" ||
-    password.length < 6 ||
-    password.length > 255
-  ) {
-    return {
-      error: "Invalid password",
-    };
-  }
-
-  // 16 characters long
-
-  // TODO: check if username is already used
-  //
+export async function login(data: LoginType) {
   try {
+    const { email, password } = loginSchema.parse(data);
     const user = await prisma.user.findFirst({
       where: {
         email: email,
@@ -46,9 +26,7 @@ export async function login(formData: FormData) {
       },
     });
     if (!user) {
-      return {
-        error: "Incorrect username or password",
-      };
+      throw new Error("Incorrect username or password");
     }
     const validPassword = await verify(user.password, password, {
       memoryCost: 19456,
@@ -57,9 +35,7 @@ export async function login(formData: FormData) {
       parallelism: 1,
     });
     if (!validPassword) {
-      return {
-        error: "Incorrect username or password",
-      };
+      throw new Error("Incorrect username or password");
     }
     const session = await lucia.createSession(user.id, {
       role: user.role,
@@ -72,38 +48,33 @@ export async function login(formData: FormData) {
       sessionCookie.attributes
     );
   } catch (e) {
-    console.log(e);
+    if (e instanceof z.ZodError) {
+      const errors = e.errors
+        .map((err) => `${err.path.join(".")}: ${err.message}`)
+        .join(", ");
+      throw new Error(`Validation error: ${errors}`);
+    }
+    if (e instanceof PrismaClientKnownRequestError) {
+      if (e.code === "P2025") {
+        throw new Error("Incorrect username or password");
+      }
+      throw e;
+    }
+    if (e instanceof Error) {
+      throw new Error(e.message);
+    }
+    throw new Error("An unexpected error occurred");
   }
-  return redirect("/");
 }
 
-export async function admin(formData: FormData) {
-  console.log(formData.get("email"));
-  const email = formData.get("email");
+// 16 characters long
 
-  // username must be between 4 ~ 31 characters, and only consists of lowercase letters, 0-9, -, and _
-  // keep in mind some database (e.g. mysql) are case insensitive
-  if (typeof email !== "string" || email.length < 3 || email.length > 31) {
-    return {
-      error: "Invalid username",
-    };
-  }
-  const password = formData.get("password");
-  if (
-    typeof password !== "string" ||
-    password.length < 6 ||
-    password.length > 255
-  ) {
-    return {
-      error: "Invalid password",
-    };
-  }
+// TODO: check if username is already used
+//
 
-  // 16 characters long
-
-  // TODO: check if username is already used
-  //
+export async function admin(data: LoginType) {
   try {
+    const { email, password } = loginSchema.parse(data);
     const user = await prisma.user.findFirst({
       where: {
         email: email,
@@ -111,15 +82,11 @@ export async function admin(formData: FormData) {
       },
     });
     if (!user) {
-      return {
-        error: "Incorrect username or password",
-      };
+      throw new Error("Incorrect username or password");
     }
     const validPassword = user.password === password;
     if (!validPassword) {
-      return {
-        error: "Incorrect username or password",
-      };
+      throw new Error("Incorrect username or password");
     }
     const session = await lucia.createSession(user.id, {
       role: user.role,
@@ -132,8 +99,21 @@ export async function admin(formData: FormData) {
       sessionCookie.attributes
     );
   } catch (e) {
-    console.log(e);
+    if (e instanceof z.ZodError) {
+      const errors = e.errors
+        .map((err) => `${err.path.join(".")}: ${err.message}`)
+        .join(", ");
+      throw new Error(`Validation error: ${errors}`);
+    }
+    if (e instanceof PrismaClientKnownRequestError) {
+      if (e.code === "P2025") {
+        throw new Error("Incorrect username or password");
+      }
+      throw e;
+    }
+    if (e instanceof Error) {
+      throw new Error(e.message);
+    }
+    throw new Error("An unexpected error occurred");
   }
-
-  return redirect("/admin/dashboard");
 }

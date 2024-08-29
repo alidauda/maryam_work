@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import { MoreHorizontal, PlusCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -34,9 +35,15 @@ import { cn } from "@/lib/utils";
 import { PropertyStatus } from "@prisma/client";
 import Modal from "./modal";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
-export default async function Hostel() {
-  const property = await getPropertyBy();
+export default function Hostel() {
+  const { data: property } = useQuery({
+    queryKey: ["property"],
+    queryFn: () => getPropertyBy(),
+  });
+  const router = useRouter();
 
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 mt-5">
@@ -56,7 +63,16 @@ export default async function Hostel() {
                 {PropertyStatus.COMING_SOON}
               </TabsTrigger>
             </TabsList>
-            <Modal />
+            <Button
+              size="sm"
+              className="h-8 gap-1"
+              onClick={() => router.push("/admin/dashboard/property/create")}
+            >
+              <PlusCircle className="h-3.5 w-3.5" />
+              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                Create new room
+              </span>
+            </Button>
           </div>
         </div>
         <TabsContent value="all">

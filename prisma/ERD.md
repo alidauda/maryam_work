@@ -21,7 +21,6 @@ erDiagram
 "User" {
   String id PK
   String email UK
-  String name
   String password
   UserRole role "nullable"
   Int currentRoomId FK "nullable"
@@ -44,7 +43,6 @@ erDiagram
   Int socialness
   Int cleanliness
   String genderPreference
-  Int pricePreference
   Int roomId FK "nullable"
 }
 "Session" {
@@ -106,7 +104,6 @@ erDiagram
 **Properties**
   - `id`: 
   - `email`: 
-  - `name`: 
   - `password`: 
   - `role`: 
   - `currentRoomId`: 
@@ -133,7 +130,6 @@ erDiagram
   - `socialness`: 
   - `cleanliness`: 
   - `genderPreference`: 
-  - `pricePreference`: 
   - `roomId`: 
 
 ### `Session`

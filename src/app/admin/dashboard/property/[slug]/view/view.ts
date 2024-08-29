@@ -15,7 +15,7 @@ export async function viewRooms(id: string) {
       currentOccupants: {
         select: {
           id: true,
-          name: true,
+          email: true,
         },
       },
       bookings: {

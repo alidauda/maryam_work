@@ -47,7 +47,7 @@ export function Preferences() {
     formdata.append("gender", gender!);
     formdata.append("cleanliness", cleanliness.toString());
     formdata.append("sleepSchedule", sleepSchedule.toString());
-    formdata.append("price", price?.toString());
+
     formdata.append("quietness", quietness?.toString());
     formdata.append("socialness", socialness?.toString());
 
@@ -111,28 +111,7 @@ export function Preferences() {
                     <span>Night Owl</span>
                   </div>
                 </div>
-                <div>
-                  <Label
-                    htmlFor="price"
-                    className="block mb-2 text-sm font-medium text-black"
-                  >
-                    Price Range: {price}
-                  </Label>
-                  <Slider
-                    id="price"
-                    min={0}
-                    max={1000000}
-                    step={1}
-                    value={[price]}
-                    onValueChange={(value) => setPrice(value[0])}
-                    className="w-full"
-                  />
-                  <div className="flex justify-between text-xs text-gray-500 mt-1">
-                    <span>Low</span>
-                    <span>Medium</span>
-                    <span>High</span>
-                  </div>
-                </div>
+
                 <div>
                   <Label
                     htmlFor="price"
@@ -183,7 +162,7 @@ export function Preferences() {
                     htmlFor="price"
                     className="block mb-2 text-sm font-medium text-black"
                   >
-                    Socialness Range: {cleanliness}
+                    Cleanliness Range: {cleanliness}
                   </Label>
                   <Slider
                     id="socialness"

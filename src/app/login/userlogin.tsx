@@ -15,9 +15,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { signup } from "./login";
-import { useRouter } from "next/navigation";
+import { login } from "./login";
+import Link from "next/link";
+
 import { toast } from "sonner";
+import { useRouter } from "next/router";
 
 const signupSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -29,8 +31,8 @@ const signupSchema = z.object({
 
 type SignupFormData = z.infer<typeof signupSchema>;
 
-export default function LoginForm() {
-  const router = useRouter();
+export default function UserLogin({ router }: { router: () => void }) {
+  // const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -40,11 +42,12 @@ export default function LoginForm() {
   });
 
   const mutation = useMutation({
-    mutationFn: signup,
+    mutationFn: login,
     onSuccess: () => {
       // Handle successful signup, e.g., redirect or show success message
-      toast.success("account created");
-      router.push("/preference");
+      toast.success("sign in sccessful");
+      router();
+      // router.push("/");
     },
   });
 
@@ -53,12 +56,12 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle className="text-2xl">Create Account</CardTitle>
+          <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription>
-            Enter your details below to create your account.
+            Enter your details below to login into your account.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -85,6 +88,9 @@ export default function LoginForm() {
                 </p>
               )}
             </div>
+            <Link href="/register" className="text-blue-500">
+              Don't have an Account ? Create one
+            </Link>
             <Button
               className="w-full"
               type="submit"

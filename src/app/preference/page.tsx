@@ -10,9 +10,5 @@ export default async function Component() {
     return redirect("/login");
   }
 
-  return (
-    <Rquery>
-      <Preferences />;
-    </Rquery>
-  );
+  return <Preferences />;
 }

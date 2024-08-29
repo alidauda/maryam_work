@@ -11,7 +11,6 @@ const schema = zfd.formData({
   sleepSchedule: zfd.numeric(),
   cleanliness: zfd.numeric(),
 
-  price: zfd.text(),
   quietness: zfd.numeric(),
   socialness: zfd.numeric(),
 });
@@ -43,7 +42,6 @@ export async function createPreference(formData: FormData) {
         quietness: data.quietness,
         socialness: data.socialness,
         cleanliness: data.cleanliness,
-        pricePreference: parseInt(data.price),
       },
     });
     console.log("New preference created:", newPreference);

@@ -15,9 +15,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { signup } from "./login";
-import { useRouter } from "next/navigation";
+import { admin, login } from "./login";
+import Link from "next/link";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TabsContent } from "@radix-ui/react-tabs";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const signupSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -29,8 +32,7 @@ const signupSchema = z.object({
 
 type SignupFormData = z.infer<typeof signupSchema>;
 
-export default function LoginForm() {
-  const router = useRouter();
+export default function AdminLogin({ router }: { router: () => void }) {
   const {
     register,
     handleSubmit,
@@ -40,25 +42,24 @@ export default function LoginForm() {
   });
 
   const mutation = useMutation({
-    mutationFn: signup,
+    mutationFn: admin,
     onSuccess: () => {
       // Handle successful signup, e.g., redirect or show success message
-      toast.success("account created");
-      router.push("/preference");
+      toast.success("Signup successful");
+      router();
     },
   });
 
   const onSubmit = (data: SignupFormData) => {
     mutation.mutate(data);
   };
-
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle className="text-2xl">Create Account</CardTitle>
+          <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription>
-            Enter your details below to create your account.
+            Enter your details below to login into your account.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -85,6 +86,7 @@ export default function LoginForm() {
                 </p>
               )}
             </div>
+
             <Button
               className="w-full"
               type="submit"

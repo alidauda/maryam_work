@@ -1,67 +1,44 @@
 "use server";
+import { z } from "zod";
 import prisma from "@/utils/db";
 import { UserRole } from "@prisma/client";
 import { hash } from "@node-rs/argon2";
 import { cookies } from "next/headers";
 import { lucia } from "@/utils/auth";
-import { redirect } from "next/navigation";
 import { generateIdFromEntropySize } from "lucia";
 
-interface ActionResult {
-  error: string;
-}
-
-export async function signup(formData: FormData) {
-  console.log(formData.get("email"));
-  const email = formData.get("email");
-  const name = formData.get("name");
-
-  if (typeof name != "string" || name.length < 3 || name.length > 31) {
-    return {
-      error: "Invalid name",
-    };
-  }
-
-  // username must be between 4 ~ 31 characters, and only consists of lowercase letters, 0-9, -, and _
-  // keep in mind some database (e.g. mysql) are case insensitive
-  if (typeof email !== "string" || email.length < 3 || email.length > 31) {
-    return {
-      error: "Invalid username",
-    };
-  }
-  const password = formData.get("password");
-  if (
-    typeof password !== "string" ||
-    password.length < 6 ||
-    password.length > 255
-  ) {
-    return {
-      error: "Invalid password",
-    };
-  }
-
-  const passwordHash = await hash(password, {
-    // recommended minimum parameters
-    memoryCost: 19456,
-    timeCost: 2,
-    outputLen: 32,
-    parallelism: 1,
-  });
-  const userId = generateIdFromEntropySize(10); // 16 characters long
-
-  // TODO: check if username is already used
-  //
+const signupSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6).max(255),
+});
+type SignupFormData = z.infer<typeof signupSchema>;
+export async function signup(data: SignupFormData) {
   try {
+    const { email, password } = signupSchema.parse(data);
+
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      throw new Error("Email already in use");
+    }
+
+    const passwordHash = await hash(password, {
+      memoryCost: 19456,
+      timeCost: 2,
+      outputLen: 32,
+      parallelism: 1,
+    });
+
+    const userId = generateIdFromEntropySize(10);
+
     const user = await prisma.user.create({
       data: {
         id: userId,
         email,
         password: passwordHash,
-        name,
+
         role: UserRole.GUEST,
       },
     });
-    console.log("user created");
 
     const session = await lucia.createSession(userId, {
       role: user.role,
@@ -73,8 +50,18 @@ export async function signup(formData: FormData) {
       sessionCookie.value,
       sessionCookie.attributes
     );
+
+    return { success: true, message: "Account created successfully" };
   } catch (e) {
-    console.log(e);
+    if (e instanceof z.ZodError) {
+      const errors = e.errors
+        .map((err) => `${err.path.join(".")}: ${err.message}`)
+        .join(", ");
+      throw new Error(`Validation error: ${errors}`);
+    }
+    if (e instanceof Error) {
+      throw new Error(e.message);
+    }
+    throw new Error("An unexpected error occurred");
   }
-  return redirect("/");
 }

@@ -5,7 +5,7 @@ import prisma from "@/utils/db";
 import { $Enums } from "@prisma/client";
 import { redirect } from "next/navigation";
 
-export async function getFilteredRoomRecommendations() {
+export async function getFilteredRoomRecommendations(id: string) {
   // Step 1: Filter by Budget and Availability
   const { user } = await validateRequest();
   if (!user) {
@@ -29,7 +29,8 @@ export async function getFilteredRoomRecommendations() {
 
   const availableRooms = await prisma.room.findMany({
     where: {
-      price: { lte: me.preference?.pricePreference },
+      id: parseInt(id),
+
       availableSpots: { gt: 0 },
       status: "AVAILABLE",
       Preference: {

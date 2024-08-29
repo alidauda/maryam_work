@@ -18,7 +18,7 @@ export default async function Page({ params }: { params: { room: string } }) {
     <>
       <Header />
 
-      <Rooms imageUrl={rooms.data!.images} user={user} />
+      <Rooms imageUrl={rooms.data!.images} user={user} property={params.room} />
     </>
   );
 }

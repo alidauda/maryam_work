@@ -162,25 +162,26 @@ export default function PropertyEdit({ params }: { params: { slug: string } }) {
         <div>
           <Label>Images</Label>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-2">
-            {data.images.map((image) => (
-              <div key={image.id} className="relative group">
-                <Image
-                  src={image.url}
-                  alt={`Property image ${image.id}`}
-                  width={300}
-                  height={200}
-                  className="rounded-lg object-cover"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleImageDelete(image.id)}
-                  className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
-            {
+            {data &&
+              data.images.map((image) => (
+                <div key={image.id} className="relative group">
+                  <Image
+                    src={image.url}
+                    alt={`Property image ${image.id}`}
+                    width={300}
+                    height={200}
+                    className="rounded-lg object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleImageDelete(image.id)}
+                    className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            {images &&
               // Display uploaded images as placeholders
               images.map((image) => (
                 <div key={image.id} className="relative group">
@@ -203,8 +204,7 @@ export default function PropertyEdit({ params }: { params: { slug: string } }) {
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
-              ))
-            }
+              ))}
             <div
               className="border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-gray-400 transition-colors"
               onClick={() => fileInputRef.current?.click()}

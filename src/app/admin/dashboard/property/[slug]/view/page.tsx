@@ -66,51 +66,52 @@ export default function PropertyRooms({
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Property Rooms</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {data.map((room) => (
-          <Card key={room.id} className="overflow-hidden">
-            <Image
-              src={room.imageUrl}
-              alt={room.roomName}
-              width={300}
-              height={200}
-              className="w-full h-48 object-cover"
-            />
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <CardTitle>{room.roomName}</CardTitle>
-                <Badge className={getStatusColor(room.status as RoomStatus)}>
-                  {room.status}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="flex justify-between items-center mb-2">
-                <div className="flex items-center">
-                  <Users className="w-4 h-4 mr-2" />
-                  <span>{room.capacity} guests</span>
+        {data &&
+          data.map((room) => (
+            <Card key={room.id} className="overflow-hidden">
+              <Image
+                src={room.imageUrl}
+                alt={room.roomName}
+                width={300}
+                height={200}
+                className="w-full h-48 object-cover"
+              />
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <CardTitle>{room.roomName}</CardTitle>
+                  <Badge className={getStatusColor(room.status as RoomStatus)}>
+                    {room.status}
+                  </Badge>
                 </div>
-                <div className="flex items-center">
-                  <DollarSign className="w-4 h-4 mr-2" />
-                  <span>${room.price}/night</span>
+              </CardHeader>
+              <CardContent>
+                <div className="flex justify-between items-center mb-2">
+                  <div className="flex items-center">
+                    <Users className="w-4 h-4 mr-2" />
+                    <span>{room.capacity} guests</span>
+                  </div>
+                  <div className="flex items-center">
+                    <DollarSign className="w-4 h-4 mr-2" />
+                    <span>${room.price}/night</span>
+                  </div>
                 </div>
-              </div>
-              <div className="flex justify-between items-center mb-4">
-                <span>{room.availableSpots} spots available</span>
-                <span>{room.currentOccupants.length} current occupants</span>
-              </div>
+                <div className="flex justify-between items-center mb-4">
+                  <span>{room.availableSpots} spots available</span>
+                  <span>{room.currentOccupants.length} current occupants</span>
+                </div>
 
-              <Button
-                onClick={() =>
-                  //@ts-ignore - bookings is an array of objects
-                  setSelectedRoom(room)
-                }
-                className="w-full"
-              >
-                View Details
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
+                <Button
+                  onClick={() =>
+                    //@ts-ignore - bookings is an array of objects
+                    setSelectedRoom(room)
+                  }
+                  className="w-full"
+                >
+                  View Details
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
       </div>
 
       {selectedRoom && (

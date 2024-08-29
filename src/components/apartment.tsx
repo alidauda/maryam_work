@@ -60,13 +60,15 @@ interface User {
 export default function Rooms({
   imageUrl,
   user,
+  property,
 }: {
   imageUrl: { url: string }[];
   user: User;
+  property: string;
 }) {
   const { data, isLoading } = useQuery({
     queryKey: ["recommend"],
-    queryFn: () => getFilteredRoomRecommendations(),
+    queryFn: () => getFilteredRoomRecommendations(property),
   });
 
   const { mutate } = useMutation({
@@ -190,7 +192,7 @@ export default function Rooms({
                     </span>
                   </div>
                   <div className="flex items-center justify-between w-full mt-auto">
-                    <h4 className="text-lg font-bold text-gray-900">
+                    <h4 className="text-base font-bold text-gray-900">
                       ₦{room.price.toLocaleString()}/month
                     </h4>
                     {room.availableSpots > 0 &&
