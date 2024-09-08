@@ -15,26 +15,42 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { signup } from "./login";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 const signupSchema = z.object({
+  name: z
+    .string()
+    .min(2, "Name must be at least 2 characters")
+    .max(50, "Name must be at most 50 characters"),
   email: z.string().email("Invalid email address"),
   password: z
     .string()
     .min(6, "Password must be at least 6 characters")
     .max(255, "Password must be at most 255 characters"),
+  gender: z.enum(["male", "female", "other"], {
+    errorMap: () => ({ message: "Please select a gender" }),
+  }),
+  phoneNumber: z.string(),
 });
 
 type SignupFormData = z.infer<typeof signupSchema>;
 
-export default function LoginForm() {
+export default function SignupForm() {
   const router = useRouter();
   const {
     register,
     handleSubmit,
     formState: { errors },
+    control,
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
   });
@@ -42,8 +58,7 @@ export default function LoginForm() {
   const mutation = useMutation({
     mutationFn: signup,
     onSuccess: () => {
-      // Handle successful signup, e.g., redirect or show success message
-      toast.success("account created");
+      toast.success("Account created");
       router.push("/preference");
     },
   });
@@ -53,8 +68,8 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <Card className="w-full max-w-sm">
+    <div className="flex justify-center items-center min-h-screen p-4">
+      <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl">Create Account</CardTitle>
           <CardDescription>
@@ -70,12 +85,21 @@ export default function LoginForm() {
             )}
 
             <div className="grid gap-2">
+              <Label htmlFor="name">Name</Label>
+              <Input id="name" {...register("name")} />
+              {errors.name && (
+                <p className="text-red-500 text-sm">{errors.name.message}</p>
+              )}
+            </div>
+
+            <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input id="email" type="email" {...register("email")} />
               {errors.email && (
                 <p className="text-red-500 text-sm">{errors.email.message}</p>
               )}
             </div>
+
             <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
               <Input id="password" type="password" {...register("password")} />
@@ -85,6 +109,36 @@ export default function LoginForm() {
                 </p>
               )}
             </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="gender">Gender</Label>
+              <Select
+                onValueChange={(value) => (control._formValues.gender = value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select gender" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="male">Male</SelectItem>
+                  <SelectItem value="female">Female</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.gender && (
+                <p className="text-red-500 text-sm">{errors.gender.message}</p>
+              )}
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="phoneNumber">Phone Number</Label>
+              <Input id="phoneNumber" {...register("phoneNumber")} />
+              {errors.phoneNumber && (
+                <p className="text-red-500 text-sm">
+                  {errors.phoneNumber.message}
+                </p>
+              )}
+            </div>
+
             <Button
               className="w-full"
               type="submit"

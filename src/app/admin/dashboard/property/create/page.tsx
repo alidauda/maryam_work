@@ -6,6 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useForm, useWatch } from "react-hook-form";
@@ -14,6 +21,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 const schema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
+  gender: z.enum(["male", "female", "other"], {
+    required_error: "Gender is required",
+  }),
   description: z
     .string()
     .min(3, { message: "Description must be at least 3 characters" }),
@@ -29,7 +39,9 @@ type FormData = z.infer<typeof schema>;
 
 async function createProperty(data: FormData) {
   const formData = new FormData();
+
   formData.append("name", data.name);
+  formData.append("gender", data.gender);
   formData.append("description", data.description);
   formData.append("address", data.address);
 
@@ -64,6 +76,7 @@ export default function PropertyCreationComponent() {
     resolver: zodResolver(schema),
     defaultValues: {
       name: "",
+      gender: undefined,
       description: "",
       address: "",
       file: [],
@@ -131,6 +144,26 @@ export default function PropertyCreationComponent() {
           <Label htmlFor="name">Property Name</Label>
           <Input id="name" {...register("name")} />
           {errors.name && <p className="text-red-500">{errors.name.message}</p>}
+        </div>
+        <div>
+          <Label htmlFor="gender">Gender</Label>
+          <Select
+            onValueChange={(value) =>
+              setValue("gender", value as "male" | "female" | "other")
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select gender" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="male">Male</SelectItem>
+              <SelectItem value="female">Female</SelectItem>
+              <SelectItem value="other">Other</SelectItem>
+            </SelectContent>
+          </Select>
+          {errors.gender && (
+            <p className="text-red-500">{errors.gender.message}</p>
+          )}
         </div>
         <div>
           <Label htmlFor="description">Description</Label>

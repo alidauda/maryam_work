@@ -33,11 +33,6 @@ export async function getFilteredRoomRecommendations(id: string) {
 
       availableSpots: { gt: 0 },
       status: "AVAILABLE",
-      Preference: {
-        every: {
-          genderPreference: me.preference.genderPreference,
-        },
-      },
     },
     include: {
       property: true,
@@ -49,7 +44,6 @@ export async function getFilteredRoomRecommendations(id: string) {
     },
   });
 
-  // Step 2 & 3: Calculate Match Percentage and Rank Rooms
   const rankedRooms = availableRooms.map((room) => {
     const matchPercentage = calculateMatchPercentage(
       me.preference!,
@@ -62,7 +56,6 @@ export async function getFilteredRoomRecommendations(id: string) {
     };
   });
 
-  // Sort rooms by match percentage (descending)
   rankedRooms.sort((a, b) => b.matchPercentage - a.matchPercentage);
   setTimeout(() => {}, 4000);
 

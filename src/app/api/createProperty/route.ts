@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
       name: formData.get("name") as string,
       description: formData.get("description") as string,
       address: formData.get("address") as string,
+      gender: formData.get("gender") as string,
     };
 
     // Authenticate and authorize the user

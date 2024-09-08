@@ -96,7 +96,7 @@ export default function UserLogin({ router }: { router: () => void }) {
               type="submit"
               disabled={mutation.isPending}
             >
-              {mutation.isPending ? "Signing up..." : "Sign up"}
+              {mutation.isPending ? "Signing in..." : "Sign in"}
             </Button>
           </form>
         </CardContent>

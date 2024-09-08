@@ -8,13 +8,27 @@ import { lucia } from "@/utils/auth";
 import { generateIdFromEntropySize } from "lucia";
 
 const signupSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6).max(255),
+  name: z
+    .string()
+    .min(2, "Name must be at least 2 characters")
+    .max(50, "Name must be at most 50 characters"),
+  email: z.string().email("Invalid email address"),
+  password: z
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .max(255, "Password must be at most 255 characters"),
+  gender: z.enum(["male", "female", "other"], {
+    errorMap: () => ({ message: "Please select a valid gender" }),
+  }),
+  phoneNumber: z.string(),
 });
+
 type SignupFormData = z.infer<typeof signupSchema>;
+
 export async function signup(data: SignupFormData) {
   try {
-    const { email, password } = signupSchema.parse(data);
+    const { name, email, password, gender, phoneNumber } =
+      signupSchema.parse(data);
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
@@ -33,9 +47,11 @@ export async function signup(data: SignupFormData) {
     const user = await prisma.user.create({
       data: {
         id: userId,
+        name,
         email,
         password: passwordHash,
-
+        gender,
+        phoneNumber,
         role: UserRole.GUEST,
       },
     });

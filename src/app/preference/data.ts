@@ -7,7 +7,6 @@ import { redirect } from "next/navigation";
 import { zfd } from "zod-form-data";
 
 const schema = zfd.formData({
-  gender: zfd.text(),
   sleepSchedule: zfd.numeric(),
   cleanliness: zfd.numeric(),
 
@@ -37,7 +36,7 @@ export async function createPreference(formData: FormData) {
     const newPreference = await prisma.preference.create({
       data: {
         userId: user.id,
-        genderPreference: data.gender,
+
         sleepSchedule: data.sleepSchedule,
         quietness: data.quietness,
         socialness: data.socialness,

@@ -29,8 +29,7 @@ type propertyRooms = {
   imageUrl: string;
   currentOccupants: [];
   bookings: [
-    { id: number; startDate: Date; endDate: Date },
-    { id: number; startDate: Date; endDate: Date }
+    { id: number; startDate: Date; endDate: Date; user: { email: string } }
   ];
 };
 
@@ -91,8 +90,7 @@ export default function PropertyRooms({
                     <span>{room.capacity} guests</span>
                   </div>
                   <div className="flex items-center">
-                    <DollarSign className="w-4 h-4 mr-2" />
-                    <span>${room.price}/night</span>
+                    <span> ₦{room.price.toLocaleString()}/month</span>
                   </div>
                 </div>
                 <div className="flex justify-between items-center mb-4">
@@ -137,7 +135,9 @@ export default function PropertyRooms({
                     </TableRow>
                     <TableRow>
                       <TableCell className="font-medium">Price</TableCell>
-                      <TableCell>${selectedRoom.price}/night</TableCell>
+                      <TableCell>
+                        &#8358;{selectedRoom.price.toLocaleString()}/month
+                      </TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell className="font-medium">Status</TableCell>
@@ -169,6 +169,7 @@ export default function PropertyRooms({
                     <TableHeader>
                       <TableRow>
                         <TableHead>Booking ID</TableHead>
+                        <TableHead>Email</TableHead>
                         <TableHead>Start Date</TableHead>
                         <TableHead>End Date</TableHead>
                       </TableRow>
@@ -177,6 +178,7 @@ export default function PropertyRooms({
                       {selectedRoom.bookings.map((booking) => (
                         <TableRow key={booking.id}>
                           <TableCell>{booking.id}</TableCell>
+                          <TableCell>{booking.user.email}</TableCell>
                           <TableCell>
                             {dateConvert(booking.startDate.toISOString())}
                           </TableCell>

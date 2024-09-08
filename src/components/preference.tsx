@@ -24,16 +24,12 @@ import { createPreference } from "@/app/preference/data";
 import { Slider } from "./ui/slider";
 
 const roommatePreferencesSchema = z.object({
-  gender: z.enum(["male", "female", "other"]),
-
   sleepSchedule: z.enum(["early", "normal", "late"]),
   course: z.string(),
 });
 type RoommatePreferences = z.infer<typeof roommatePreferencesSchema>;
 
 export function Preferences() {
-  const [gender, setGender] = useState<string>();
-
   const [sleepSchedule, setSleepSchedule] = useState<number>(0);
   const [price, setPrice] = useState<number>(0);
   const [quietness, setQuietness] = useState<number>(0);
@@ -44,7 +40,7 @@ export function Preferences() {
   });
   const onSubmit = () => {
     const formdata = new FormData();
-    formdata.append("gender", gender!);
+
     formdata.append("cleanliness", cleanliness.toString());
     formdata.append("sleepSchedule", sleepSchedule.toString());
 
@@ -71,24 +67,6 @@ export function Preferences() {
 
             <Card className="bg-white p-6 rounded-lg shadow-lg overflow-y-auto max-h-[80vh]">
               <CardContent className="grid gap-6">
-                <div>
-                  <Label
-                    htmlFor="gender"
-                    className="block mb-1 text-sm font-medium text-primary"
-                  >
-                    Gender
-                  </Label>
-                  <Select name="gender" onValueChange={(e) => setGender(e)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select gender" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="male">Male</SelectItem>
-                      <SelectItem value="female">Female</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
                 <div>
                   <Label
                     htmlFor="sleepSchedule"

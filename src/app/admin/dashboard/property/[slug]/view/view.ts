@@ -23,6 +23,7 @@ export async function viewRooms(id: string) {
           id: true,
           startDate: true,
           endDate: true,
+          user: true,
         },
       },
     },

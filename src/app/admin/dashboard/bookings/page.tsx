@@ -13,7 +13,11 @@ import DataTabelBookings from "./components/DataTable";
 import prisma from "@/utils/db";
 
 export default async function Hostel() {
-  const bookings = await prisma.booking.findMany({});
+  const bookings = await prisma.booking.findMany({
+    include: {
+      user: true,
+    },
+  });
 
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 mt-5">

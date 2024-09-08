@@ -97,6 +97,9 @@ export default function Hostel() {
                       rooms
                     </TableHead>
                     <TableHead className="hidden md:table-cell">
+                      gender
+                    </TableHead>
+                    <TableHead className="hidden md:table-cell">
                       Created at
                     </TableHead>
                     <TableHead>
@@ -147,6 +150,9 @@ export default function Hostel() {
                           </TableCell>
                           <TableCell className="hidden md:table-cell">
                             {item.rooms.length}
+                          </TableCell>
+                          <TableCell className="hidden md:table-cell">
+                            {item.gender}
                           </TableCell>
                           <TableCell className="hidden md:table-cell">
                             {value}

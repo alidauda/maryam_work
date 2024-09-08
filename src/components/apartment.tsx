@@ -71,13 +71,6 @@ export default function Rooms({
     queryFn: () => getFilteredRoomRecommendations(property),
   });
 
-  const { mutate } = useMutation({
-    mutationFn: createBookingAndPayment,
-    onSuccess: () => {
-      toast.success("Booking successful");
-    },
-  });
-
   const { data: bookingState, isLoading: isLoadingBookingState } = useQuery({
     queryKey: ["bookingState"],
     queryFn: () => checkActiveBooking(user.id),
@@ -108,7 +101,7 @@ export default function Rooms({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {data &&
-            data.map((room: Room) => (
+            data.map((room) => (
               <Card
                 key={room.id}
                 className="flex flex-col overflow-hidden transition-shadow duration-300 hover:shadow-lg"
@@ -124,7 +117,7 @@ export default function Rooms({
                 <CardContent className="flex flex-col items-start gap-4 p-6 flex-grow">
                   <div className="flex items-center justify-between w-full">
                     <h3 className="text-xl font-bold text-gray-900">
-                      Room of {room.capacity}
+                      {room.roomName}
                     </h3>
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-semibold ${
@@ -198,34 +191,12 @@ export default function Rooms({
                     {room.availableSpots > 0 &&
                     !isLoadingBookingState &&
                     !bookingState!.hasActiveBooking ? (
-                      <PaystackButton
-                        className="bg-yellow-500 text-gray-900 hover:bg-yellow-400 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
-                        text="Book Now"
-                        publicKey="pk_test_37335d37c9fb118d8a917de0a58a8efde1bb96c4"
-                        amount={room.price * 100} // amount in kobo
-                        email={user.email}
-                        metadata={{
-                          custom_fields: [
-                            {
-                              display_name: "Room",
-                              variable_name: "room",
-                              value: room.id,
-                            },
-                          ],
-                        }}
-                        onSuccess={(reference) => {
-                          console.log(reference);
-                          mutate({
-                            userId: user.id,
-                            roomId: room.id,
-                            amount: room.price,
-                            paymentData: reference,
-                            endDate: new Date(),
-                            startDate: new Date(),
-                          });
-                        }}
-                        onClose={() => console.log("Payment canceled")}
-                      />
+                      <Link
+                        href={`/apartment/${property}/${room.id}`}
+                        className="bg-black text-white p-2 rounded-md"
+                      >
+                        View Room
+                      </Link>
                     ) : (
                       <Button
                         disabled

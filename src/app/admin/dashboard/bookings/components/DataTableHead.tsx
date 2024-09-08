@@ -19,7 +19,8 @@ export default function DataTableHeadBookings({
           <TableHead className="hidden md:table-cell">Start Date</TableHead>
           <TableHead className="hidden md:table-cell">End Date</TableHead>
           <TableHead>Status</TableHead>
-          <TableHead>UserID</TableHead>
+          <TableHead>Name</TableHead>
+          <TableHead>Email</TableHead>
           <TableHead className="hidden md:table-cell">Room ID</TableHead>
           <TableHead>Created At</TableHead>
           <TableHead>Updated At</TableHead>

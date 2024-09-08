@@ -24,6 +24,10 @@ interface Booking {
   roomId: number;
   createdAt: Date;
   updatedAt: Date;
+  user: {
+    email: string;
+    name: string;
+  };
 }
 
 interface DataTableProps {
@@ -59,7 +63,8 @@ export default function DataTabelBookings({
                 {booking.status}
               </Badge>
             </TableCell>
-            <TableCell>{booking.userId}</TableCell>
+            <TableCell>{booking.user.name}</TableCell>
+            <TableCell>{booking.user.email}</TableCell>
             <TableCell>{booking.roomId}</TableCell>
             <TableCell>{createdAtFormatted}</TableCell>
             <TableCell>
