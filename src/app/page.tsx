@@ -9,7 +9,7 @@ export default async function Home() {
   const { user } = await validateRequest();
 
   return (
-    <LandingPage user={user} />
+    <LandingPage />
     // <div>
     //   <nav className="flex justify-between px-20 bg-red-300 py-10 shadow-xl  ">
     //     <ul>

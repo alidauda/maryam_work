@@ -39,6 +39,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { createBookingAndPayment } from "../../payment";
 import { toast } from "sonner";
 import { PaystackButton } from "react-paystack";
+import { checkActiveBooking } from "../../bookingstate";
 
 export default function SingleRoom({
   params,
@@ -54,6 +55,10 @@ export default function SingleRoom({
     onSuccess: () => {
       toast.success("Booking successful");
     },
+  });
+  const { data: bookingState, isLoading: isLoadingBookingState } = useQuery({
+    queryKey: ["bookingState"],
+    queryFn: () => checkActiveBooking(),
   });
   const [date, setDate] = React.useState<DateRange | undefined>(undefined);
   const [totalPrice, setTotalPrice] = React.useState<number | null>(null);
@@ -337,40 +342,55 @@ export default function SingleRoom({
         </Card>
 
         <div className="mt-8 text-center">
-          <PaystackButton
-            disabled={
-              !date?.from ||
-              !date?.to ||
-              monthsSelected === null ||
-              monthsSelected < 1
-            }
-            className="bg-yellow-500 text-gray-900 hover:bg-yellow-400 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
-            text="Book Now"
-            publicKey="pk_test_37335d37c9fb118d8a917de0a58a8efde1bb96c4"
-            amount={totalPrice! * 100} // amount in kobo
-            email={roomDetails.me.email}
-            metadata={{
-              custom_fields: [
-                {
-                  display_name: "Room",
-                  variable_name: "room",
-                  value: roomDetails.id,
-                },
-              ],
-            }}
-            onSuccess={(reference) => {
-              console.log(reference);
-              mutate({
-                userId: roomDetails.me.id,
-                roomId: roomDetails.id,
-                amount: totalPrice!,
-                paymentData: reference,
-                endDate: date?.to!,
-                startDate: date?.from!,
-              });
-            }}
-            onClose={() => console.log("Payment canceled")}
-          />
+          {roomDetails.availableSpots > 0 &&
+          !isLoadingBookingState &&
+          !bookingState!.hasActiveBooking ? (
+            <PaystackButton
+              disabled={
+                !date?.from ||
+                !date?.to ||
+                monthsSelected === null ||
+                monthsSelected < 1
+              }
+              className="bg-yellow-500 text-gray-900 hover:bg-yellow-400 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+              text="Book Now"
+              publicKey={process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!}
+              amount={totalPrice! * 100} // amount in kobo
+              email={roomDetails.me.email}
+              metadata={{
+                custom_fields: [
+                  {
+                    display_name: "Room",
+                    variable_name: "room",
+                    value: roomDetails.id,
+                  },
+                ],
+              }}
+              onSuccess={(reference) => {
+                console.log(reference);
+                mutate({
+                  userId: roomDetails.me.id,
+                  roomId: roomDetails.id,
+                  amount: totalPrice!,
+                  paymentData: reference,
+                  endDate: date?.to!,
+                  startDate: date?.from!,
+                });
+              }}
+              onClose={() => console.log("Payment canceled")}
+            />
+          ) : (
+            <Button
+              disabled
+              className="bg-gray-300 text-gray-500 cursor-not-allowed"
+            >
+              {isLoadingBookingState
+                ? "Loading..."
+                : bookingState!.hasActiveBooking
+                ? "Booked"
+                : "Not Available"}
+            </Button>
+          )}
 
           <Button variant="outline" className="flex items-center gap-2">
             <ArrowLeftIcon className="w-4 h-4" />

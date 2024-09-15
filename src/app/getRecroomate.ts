@@ -29,7 +29,7 @@ export async function getFilteredRoomRecommendations(id: string) {
 
   const availableRooms = await prisma.room.findMany({
     where: {
-      id: parseInt(id),
+      propertyId: parseInt(id),
 
       availableSpots: { gt: 0 },
       status: "AVAILABLE",

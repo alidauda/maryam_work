@@ -1,14 +1,7 @@
-// This is your updated Prisma schema file
-
 generator client {
   provider = "prisma-client-js"
 }
 
-generator markdown {
-  provider = "prisma-markdown"
-  output   = "./ERD.md"
-  title    = "Shopping Mall"
-}
 
 datasource db {
   provider = "postgresql"
@@ -35,9 +28,9 @@ model Room {
 model User {
   id                 String      @id @default(uuid())
   email              String      @unique
- name String
- gender String
- phoneNumber String
+  name               String
+  gender             String
+  phoneNumber        String
   password           String
   sessions           Session[]
   bookings           Booking[]
@@ -54,7 +47,7 @@ model Booking {
   status    BookingStatus @default(PENDING)
   user      User          @relation(fields: [userId], references: [id])
   userId    String
-  room      Room          @relation(fields: [roomId], references: [id])
+  room      Room          @relation(fields: [roomId], references: [id], onDelete: Cascade)
   roomId    Int
   payment   Payment?
   createdAt DateTime      @default(now())
@@ -68,11 +61,9 @@ model Preference {
   sleepSchedule Int // Scale of 1-5
   quietness     Int
   socialness    Int
-cleanliness Int
-  
- 
-  Room             Room?  @relation(fields: [roomId], references: [id])
-  roomId           Int?
+  cleanliness   Int
+  Room          Room?   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  roomId        Int?
 }
 
 model Session {
@@ -89,7 +80,7 @@ model Property {
   name        String
   description String
   address     String
-  gender     String
+  gender      String
   images      Images[]
   status      PropertyStatus @default(ACTIVE)
   rooms       Room[]
@@ -101,11 +92,20 @@ model Payment {
   id        Int           @id @default(autoincrement())
   amount    Float
   status    PaymentStatus
-  booking   Booking       @relation(fields: [bookingId], references: [id])
+  booking   Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   bookingId Int           @unique
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
 }
+
+model Images {
+  id         Int      @id @default(autoincrement())
+  url        String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyId Int
+}
+
+// Enum definitions remain unchanged
 
 enum PaymentStatus {
   PENDING
@@ -114,13 +114,7 @@ enum PaymentStatus {
   REFUNDED
 }
 
-model Images {
-  id  Int    @id @default(autoincrement())
-  url String
 
-  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  propertyId Int
-}
 
 enum UserRole {
   ADMIN

@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 
 const schema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
@@ -64,7 +65,7 @@ async function createProperty(data: FormData) {
 
 export default function PropertyCreationComponent() {
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
-
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -97,6 +98,7 @@ export default function PropertyCreationComponent() {
     mutationFn: createProperty,
     onSuccess: () => {
       toast.success("Property Created Successfully");
+      router.push("/admin/dashboard/property");
       // Reset form or redirect here if needed
     },
     onError: (error: Error) => {

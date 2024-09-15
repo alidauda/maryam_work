@@ -73,7 +73,7 @@ export default function Rooms({
 
   const { data: bookingState, isLoading: isLoadingBookingState } = useQuery({
     queryKey: ["bookingState"],
-    queryFn: () => checkActiveBooking(user.id),
+    queryFn: () => checkActiveBooking(),
   });
 
   if (isLoading) {
