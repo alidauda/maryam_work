@@ -33,7 +33,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSingleRoomRecommendation } from "@/app/recommendationForAsingleRoom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createBookingAndPayment } from "../../payment";
@@ -46,6 +46,7 @@ export default function SingleRoom({
 }: {
   params: { room: string; one: string };
 }) {
+  const query = useQueryClient();
   const { data: roomDetails, isLoading } = useQuery({
     queryKey: ["recommend", params.room, params.one],
     queryFn: () => getSingleRoomRecommendation(params.room, params.one),
@@ -54,6 +55,7 @@ export default function SingleRoom({
     mutationFn: createBookingAndPayment,
     onSuccess: () => {
       toast.success("Booking successful");
+      query.invalidateQueries();
     },
   });
   const { data: bookingState, isLoading: isLoadingBookingState } = useQuery({

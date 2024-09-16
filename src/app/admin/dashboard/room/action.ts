@@ -12,14 +12,15 @@ const utapi = new UTApi();
 // Define the schema using zod-form-data
 const roomSchema = zfd.formData({
   name: zfd.text(),
-  property: zfd.numeric(),
-  price: zfd.numeric(),
-  capacity: zfd.numeric(),
-  availableroom: zfd.numeric(),
+  property: zfd.text(),
+  price: zfd.text(),
+  capacity: zfd.text(),
+  availableroom: zfd.text(),
   image: zfd.file(),
 });
 
 export async function createRoom(formData: FormData) {
+  console.log(formData);
   try {
     const { user: userId } = await validateRequest();
     if (!userId) {
@@ -59,10 +60,10 @@ export async function createRoom(formData: FormData) {
     const newRoom = await prisma.room.create({
       data: {
         roomName: validatedData.name,
-        price: validatedData.price,
-        capacity: validatedData.capacity,
-        availableSpots: validatedData.availableroom,
-        propertyId: validatedData.property,
+        price: parseInt(validatedData.price),
+        capacity: parseInt(validatedData.capacity),
+        availableSpots: parseInt(validatedData.availableroom),
+        propertyId: parseInt(validatedData.property),
         imageUrl: imageUrl!,
       },
     });
@@ -133,5 +134,32 @@ export async function getPropertyname() {
     throw e;
   } finally {
     await prisma.$disconnect();
+  }
+}
+
+export async function deleteRoom(id: number) {
+  try {
+    const { user: userId } = await validateRequest();
+    if (!userId) {
+      throw new Error("Unauthorized: User not logged in");
+    }
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId?.id,
+      },
+    });
+    if (!user) {
+      throw new Error("Unauthorized: User not found");
+    }
+
+    const property = await prisma.room.delete({
+      where: {
+        id: id,
+      },
+    });
+
+    return property;
+  } catch (e) {
+    throw e;
   }
 }

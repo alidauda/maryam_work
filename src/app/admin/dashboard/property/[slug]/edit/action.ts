@@ -34,6 +34,7 @@ interface Props {
     description: string;
     status: string;
     address: string;
+    gender: string;
 
     images: {
       id: number;
@@ -99,6 +100,7 @@ export async function updateProperty(data: Props) {
         description: data.property.description,
         status: data.property.status as PropertyStatus,
         address: data.property.address,
+        gender: data.property.gender,
         images: {
           connect: data.property.images,
         },

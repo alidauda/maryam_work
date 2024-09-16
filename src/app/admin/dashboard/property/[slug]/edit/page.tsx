@@ -19,8 +19,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { PropertyStatus } from "@prisma/client";
 import { toast } from "sonner";
 
-// This would typically come from your API or props
-
 export default function PropertyEdit({ params }: { params: { slug: string } }) {
   const { data, isError, isLoading } = useQuery({
     queryKey: ["property", params.slug],
@@ -54,6 +52,10 @@ export default function PropertyEdit({ params }: { params: { slug: string } }) {
     setProperty({ ...property!, status: value });
   };
 
+  const handleGenderChange = (value: string) => {
+    setProperty({ ...property!, gender: value });
+  };
+
   const handleImageDelete = (imageId: number) => {
     setProperty({
       ...property!,
@@ -62,13 +64,12 @@ export default function PropertyEdit({ params }: { params: { slug: string } }) {
   };
 
   const handleImageAdd = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files!); // Convert FileList to an array
+    const files = Array.from(e.target.files!);
     if (files) {
       const newImages = files.map((file, index) => ({
-        id: Date.now() + index, // Generate a unique id
+        id: Date.now() + index,
         url: URL.createObjectURL(file),
       }));
-      console.log("New images:", newImages);
       setImages((prev) => [...prev, ...newImages]);
       setImageFile((prev) => [...prev!, ...files!]);
     }
@@ -76,7 +77,6 @@ export default function PropertyEdit({ params }: { params: { slug: string } }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send the updated property data to your API
     const formData = new FormData();
     if (imageFile) {
       for (let i = 0; i < imageFile!.length; i++) {
@@ -90,13 +90,14 @@ export default function PropertyEdit({ params }: { params: { slug: string } }) {
         images: [...property!.images],
       },
     });
-    console.log(myerror);
   };
+
   useEffect(() => {
     if (data) {
       setProperty(data);
     }
   }, [data]);
+
   if (isLoading) {
     return <PropertyEditSkeleton />;
   }
@@ -160,9 +161,21 @@ export default function PropertyEdit({ params }: { params: { slug: string } }) {
           </Select>
         </div>
         <div>
+          <Label htmlFor="gender">Gender</Label>
+          <Select onValueChange={handleGenderChange} defaultValue={data.gender}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select gender" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Male">Male</SelectItem>
+              <SelectItem value="Female">Female</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
           <Label>Images</Label>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-2">
-            {data &&
+            {data.images &&
               data.images.map((image) => (
                 <div key={image.id} className="relative group">
                   <Image
@@ -182,7 +195,6 @@ export default function PropertyEdit({ params }: { params: { slug: string } }) {
                 </div>
               ))}
             {images &&
-              // Display uploaded images as placeholders
               images.map((image) => (
                 <div key={image.id} className="relative group">
                   <Image
@@ -241,6 +253,7 @@ function PropertyEditSkeleton() {
       <div className="space-y-4">
         <Skeleton className="h-10 w-full" />
         <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-10 w-full" />
         <Skeleton className="h-10 w-full" />
         <Skeleton className="h-10 w-full" />
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-2">
