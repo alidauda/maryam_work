@@ -304,6 +304,7 @@ export default function SingleRoom({
                           {roommate.matchPercentages.overall}% overall match
                         </span>
                       </div>
+
                       <div>
                         <span className="text-sm">
                           Cleanliness: {roommate.matchPercentages.cleanliness}%
@@ -319,6 +320,16 @@ export default function SingleRoom({
                         </span>
                         <Progress
                           value={roommate.matchPercentages.quietness}
+                          className="h-1"
+                        />
+                      </div>
+                      <div>
+                        <span className="text-sm">
+                          Sleep Schedule:{" "}
+                          {roommate.matchPercentages.sleepSchedule}%
+                        </span>
+                        <Progress
+                          value={roommate.matchPercentages.sleepSchedule}
                           className="h-1"
                         />
                       </div>

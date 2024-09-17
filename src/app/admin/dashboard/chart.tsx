@@ -108,6 +108,7 @@ export default function BookingTrendChart() {
               axisLine={false}
               tickMargin={8}
               tickFormatter={(value) => `${value}`}
+              domain={[0, "auto"]} // This line sets the Y-axis to start from 0
             />
             <ChartTooltip
               cursor={false}

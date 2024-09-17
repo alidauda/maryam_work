@@ -100,9 +100,13 @@ const calculateMatchPercentages = (
     userPreferences.socialness,
     roommatePreferences.socialness
   );
+  const sleepSchedule = calculatePreferenceMatch(
+    userPreferences.sleepSchedule,
+    roommatePreferences.sleepSchedule
+  );
 
   const overallMatch = Math.round(
-    (cleanlinessMatch + quietnessMatch + socialnessMatch) / 3
+    (cleanlinessMatch + quietnessMatch + socialnessMatch + sleepSchedule) / 4
   );
 
   return {
@@ -110,5 +114,6 @@ const calculateMatchPercentages = (
     cleanliness: cleanlinessMatch,
     quietness: quietnessMatch,
     socialness: socialnessMatch,
+    sleepSchedule: sleepSchedule,
   };
 };
