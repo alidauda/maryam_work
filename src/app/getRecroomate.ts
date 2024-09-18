@@ -85,10 +85,13 @@ const calculateMatchPercentage = (
     const socialDiff = Math.abs(
       userPreferences.socialness - occupant.socialness
     );
-    return sum + cleanDiff + quietDiff + socialDiff;
+    const sleepSchedule = Math.abs(
+      userPreferences.sleepSchedule - occupant.sleepSchedule
+    );
+    return sum + cleanDiff + quietDiff + socialDiff + sleepSchedule;
   }, 0);
 
-  const maxPossibleDifference = roomOccupants.length * 30; // 10 points max difference per preference, 3 preferences
+  const maxPossibleDifference = roomOccupants.length * 40; // 10 points max difference per preference, 3 preferences
   const matchPercentage = 100 - (totalDifference / maxPossibleDifference) * 100;
   return Math.round(matchPercentage);
 };
